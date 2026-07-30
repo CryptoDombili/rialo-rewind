@@ -1,8 +1,8 @@
-# Rialo Rewind R1.1
+# Rialo Rewind R1.0
 
 Native compensation and recovery engine for real-world workflows on Rialo.
 
-R1.1 connects the interface to a real server-side state machine. The clean and controlled-failure flows are executed inside `/api/workflow`; the browser only replays the events returned by that execution.
+R1.0 connects the interface to a real server-side state machine. The clean and controlled-failure flows are executed inside `/api/workflow`; the browser only replays the events returned by that execution.
 
 ## What is real
 
@@ -27,6 +27,14 @@ npm run check
 ```
 
 
-## R1.1 receipt anchoring
+## R1.2 public receipt verifier
 
-After a server workflow issues a SHA-256 receipt hash, the operator can anchor that hash to Rialo devnet. The anchor endpoint domain-separates the receipt hash, derives a deterministic commitment address, and submits a small devnet transfer to that address. Verification recomputes the address from the receipt hash and checks transaction-index or account-state evidence. This is a hash commitment, not a general-purpose memo program.
+R1.2 adds a browser-side verifier for exported `rialo-rewind.receipt.v2` JSON files. The verifier:
+
+- parses the receipt locally without uploading the full file,
+- recomputes the SHA-256 receipt hash after excluding `receiptHash` and `onchainAnchor`,
+- detects changed workflow fields or event history,
+- checks that the anchor evidence binds the same receipt hash, and
+- performs a read-only Rialo devnet verification through the existing anchor endpoint.
+
+Possible results are `VALID`, `TAMPERED`, `PENDING`, `UNVERIFIED`, or `INVALID`.

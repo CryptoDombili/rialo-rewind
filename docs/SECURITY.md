@@ -12,4 +12,4 @@
 
 ## Receipt anchor limitations
 
-The R1.1 commitment address is deterministically derived from public receipt data. It is not a custody address and must never hold valuable funds. The demo transfers only a small devnet amount. The value of the mechanism is the permanent transaction reference and deterministic hash-to-address binding, not control of the recipient key.
+The R1.1 anchor-protocol commitment address is deterministically derived from public receipt data. It is not a custody address and must never hold valuable funds. The demo transfers only a small devnet amount. The value of the mechanism is the permanent transaction reference and deterministic hash-to-address binding, not control of the recipient key.

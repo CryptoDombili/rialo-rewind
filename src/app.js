@@ -4,6 +4,7 @@ import { serializeReceipt } from "./core/receipt.js";
 import { executeServerWorkflow } from "./core/workflow-client.js";
 import { createReceiptAnchor, verifyReceiptAnchor } from "./rialo/receipt-anchor.js";
 import { shortAnchorValue } from "./core/anchor-model.js";
+import { initReceiptVerifier } from "./receipt-verifier.js";
 
 (() => {
       "use strict";
@@ -129,7 +130,7 @@ import { shortAnchorValue } from "./core/anchor-model.js";
         $$('[data-view]').forEach((button) => button.classList.toggle("is-active", button.dataset.view === view));
         $$('[data-panel]').forEach((panel) => panel.classList.toggle("is-visible", panel.dataset.panel === view));
         if (notify) {
-          const labels = { flow: "Node inspector opened.", proof: "Workflow proof opened.", rules: "Recovery rules opened." };
+          const labels = { flow: "Node inspector opened.", proof: "Workflow proof opened.", rules: "Recovery rules opened.", verify: "Public receipt verifier opened." };
           showToast(view.toUpperCase(), labels[view]);
         }
       }
@@ -173,7 +174,7 @@ import { shortAnchorValue } from "./core/anchor-model.js";
         receipt.failed.textContent = serverReceipt.failedStep;
         receipt.retries.textContent = String(serverReceipt.retries);
         receipt.refund.textContent = serverReceipt.refund;
-        receipt.engine.textContent = "SERVER R1.1";
+        receipt.engine.textContent = "SERVER R1.2";
         receipt.hash.textContent = `${serverReceipt.receiptHash.slice(0, 12)}…`;
         lastReceipt = serverReceipt;
         anchorButton.disabled = false;
@@ -182,7 +183,7 @@ import { shortAnchorValue } from "./core/anchor-model.js";
         $("#proofTitle").textContent = result === "COMPENSATED" ? "Recovery receipt ready" : "Settlement receipt ready";
         $("#proofText").textContent = result === "COMPENSATED" ? "The server state machine retried the courier boundary and executed three idempotent compensations." : "The server state machine completed all five forward actions and discarded the compensation stack.";
         $("#proofManual").textContent = serverReceipt.manualIntervention;
-        $("#proofEngine").textContent = "SERVER R1.1";
+        $("#proofEngine").textContent = "SERVER R1.2";
         $("#proofReceiptHash").textContent = `${serverReceipt.receiptHash.slice(0, 12)}…`;
       }
 
@@ -274,7 +275,7 @@ import { shortAnchorValue } from "./core/anchor-model.js";
 
           const [source, label] = serverEventLabel(event);
           if (event.type === "workflow.started") {
-            log("SERVER", `Execution ${event.executionId.slice(0, 8)} accepted by the R1.1 state machine.`);
+            log("SERVER", `Execution ${event.executionId.slice(0, 8)} accepted by the R1.2 state machine.`);
           } else if (event.type === "action.started") {
             selectNode(event.name);
             setNode(event.name, "is-running", event.attempt ? `TRY ${event.attempt}/3` : (event.compensation ? "REVERSING" : "RUNNING"));
@@ -488,5 +489,6 @@ import { shortAnchorValue } from "./core/anchor-model.js";
       resetUI({ keepLogs: true });
       initDevnetPanel({ showToast });
       initSignedProof({ showToast });
+      initReceiptVerifier({ showToast });
       setTimeout(() => showToast("CONSOLE READY", "Recovery engine ready. Rialo devnet health check started."), 350);
     })();
