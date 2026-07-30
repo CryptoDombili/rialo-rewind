@@ -1,5 +1,12 @@
 # Changelog
 
+## R1.4.3 — Signal sky and collision-free diagnostics
+
+- Rebuilt the ambient starfield as a denser, irregular Rialo telemetry sky.
+- Moved the 503 failure gate into the empty channel between compensation nodes.
+- Tightened workflow cards without reducing their typography.
+- Preserved all R1.4.2 workflow, anchor, verifier, report and tamper behavior.
+
 ## R1.4.2 — Operations sky and failure-gate polish
 
 - Added a restrained, Rialo-themed animated starfield behind the workflow grid.
@@ -20,7 +27,7 @@
 - Restored focus after modal close and improved live status semantics.
 - Added reduced-motion behavior and 1080p/2K verifier action layouts.
 - Added UI-contract, report-model, version-consistency, and production smoke checks.
-- Rewrote README and demo/security documentation to match the real R1.4.2 boundary.
+- Rewrote README and demo/security documentation to match the real R1.4 boundary.
 
 ## R1.3 — Tamper challenge
 

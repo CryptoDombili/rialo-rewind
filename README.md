@@ -1,8 +1,8 @@
-# Rialo Rewind R1.4.2
+# Rialo Rewind R1.4.3
 
 Native compensation and recovery engine for real-world workflows on Rialo.
 
-R1.4.2 is the polished public-demo release. It combines a server-side recovery state machine, portable SHA-256 receipts, real Rialo devnet receipt anchoring, public verification, deterministic tamper detection, and shareable verification reports.
+R1.4.3 is the polished public-demo release. It combines a server-side recovery state machine, portable SHA-256 receipts, real Rialo devnet receipt anchoring, public verification, deterministic tamper detection, and shareable verification reports.
 
 ## What is real
 
@@ -58,4 +58,4 @@ npm run smoke
 
 ## Release
 
-R1.4.2 freezes the visual system and public demo flow. Future work belongs in a dedicated Rialo registry/program milestone rather than further expanding this demo surface.
+R1.4.3 freezes the visual system and public demo flow. Future work belongs in a dedicated Rialo registry/program milestone rather than further expanding this demo surface.

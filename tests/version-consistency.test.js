@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 
-test("public runtime surfaces R1.4.2 consistently", async () => {
+test("public runtime surfaces R1.4.3 consistently", async () => {
   const [html, pkg, app, engine, client] = await Promise.all([
     readFile(new URL("../index.html", import.meta.url), "utf8"),
     readFile(new URL("../package.json", import.meta.url), "utf8"),
@@ -10,10 +10,10 @@ test("public runtime surfaces R1.4.2 consistently", async () => {
     readFile(new URL("../src/server/recovery-engine.js", import.meta.url), "utf8"),
     readFile(new URL("../src/core/workflow-client.js", import.meta.url), "utf8"),
   ]);
-  assert.match(html, /BUILD<\/span><strong>R1\.4\.2/);
-  assert.match(html, /PUBLIC RECEIPT VERIFIER \/ R1\.4\.2/);
-  assert.equal(JSON.parse(pkg).version, "1.4.2");
-  assert.match(app, /SERVER R1\.4\.2/);
-  assert.match(engine, /ENGINE_VERSION = "r1\.4\.2"/);
-  assert.match(client, /"x-rewind-engine": "r1\.4\.2"/);
+  assert.match(html, /BUILD<\/span><strong>R1\.4\.3/);
+  assert.match(html, /PUBLIC RECEIPT VERIFIER \/ R1\.4\.3/);
+  assert.equal(JSON.parse(pkg).version, "1.4.3");
+  assert.match(app, /SERVER R1\.4\.3/);
+  assert.match(engine, /ENGINE_VERSION = "r1\.4\.3"/);
+  assert.match(client, /"x-rewind-engine": "r1\.4\.3"/);
 });
