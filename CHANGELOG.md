@@ -1,48 +1,53 @@
-## R1.4.5 — Animated signal sky and step-04 spacing fix
-
-- moved the 503 diagnostic left so it no longer collides with the C1 refund card on 1080p displays
-- kept the tracer aligned to step 04 Create Shipment
-- made the ambient starfield visibly animate while staying subtle and theme-consistent
-
 # Changelog
 
-## R1.4.5 — Signal sky and collision-free diagnostics
+## R1.5 — Final public-demo release
 
-- Rebuilt the ambient starfield as a denser, irregular Rialo telemetry sky.
-- Moved the 503 failure gate into the empty channel between compensation nodes.
-- Tightened workflow cards without reducing their typography.
-- Preserved all R1.4.2 workflow, anchor, verifier, report and tamper behavior.
+- Froze the working recovery, receipt, anchor, verifier, report, and tamper flows.
+- Finalized the animated Rialo signal field and collision-free step-04 failure diagnostic.
+- Standardized public version labels and engine headers.
+- Added final release and demo checklists.
+- Preserved the walletless, no-private-key browser security boundary.
 
-## R1.4.2 — Operations sky and failure-gate polish
+## R1.4.5 — Animated signal sky and step-04 spacing
 
-- Added a restrained, Rialo-themed animated starfield behind the workflow grid.
-- Repositioned the HTTP 503 failure diagnostic so its text is never hidden beneath the shipment node.
-- Added a lower safe area for compensation and telemetry labels on 1080p and 2K displays.
-- Preserved all R1.4.1 workflow, anchoring, verifier, report, and tamper-detection behavior.
+- Moved the 503 diagnostic away from the C1 refund card on 1080p displays.
+- Kept the diagnostic tracer aligned to step 04 `CREATE SHIPMENT`.
+- Made the ambient starfield visibly animate while remaining subtle.
+
+## R1.4.4 — Courier failure pointer
+
+- Added a vertical tracer connecting the 503 diagnostic to the courier step.
+- Improved responsive failure-card placement.
+
+## R1.4.3 — Signal sky and layout fix
+
+- Rebuilt the ambient starfield as a denser Rialo telemetry sky.
+- Tightened workflow cards without reducing typography.
+
+## R1.4.2 — Operations polish
+
+- Added the Rialo-themed signal background.
+- Improved lower-label safe areas on 1080p and 2K displays.
 
 ## R1.4.1 — Tamper challenge hotfix
 
-- Fixed an undeclared `integrity` variable in the browser tamper challenge.
-- Preserved VALID verification, report download, and local-only privacy behavior.
-- Added a regression contract test for the tamper handler.
+- Fixed the verifier tamper-handler runtime error.
+- Added a regression test for the challenge path.
 
-## R1.4.1 — Final product polish
+## R1.4 — Final product polish
 
-- Added copyable public verification summaries.
-- Added downloadable `rialo-rewind.verification-report.v1` reports.
-- Restored focus after modal close and improved live status semantics.
-- Added reduced-motion behavior and 1080p/2K verifier action layouts.
-- Added UI-contract, report-model, version-consistency, and production smoke checks.
-- Rewrote README and demo/security documentation to match the real R1.4 boundary.
+- Added copyable verification summaries and downloadable reports.
+- Improved verifier accessibility and responsive action layouts.
+- Expanded architecture, security, and demo documentation.
 
 ## R1.3 — Tamper challenge
 
-- Added deterministic local receipt mutation test.
-- Proved altered data is rejected before a Rialo query.
+- Added deterministic local receipt mutation testing.
+- Rejected altered data before any Rialo query.
 
 ## R1.2 — Public verifier
 
-- Added browser-local SHA-256 receipt verification.
+- Added browser-local SHA-256 verification.
 - Added Rialo anchor binding and finality verification.
 
 ## R1.1 — Receipt anchoring
@@ -51,5 +56,5 @@
 
 ## R1.0 — Recovery engine
 
-- Added server-side clean and controlled-failure workflows.
+- Added clean and controlled-failure workflows.
 - Added retry ceilings, reverse compensation, receipts, and idempotency keys.

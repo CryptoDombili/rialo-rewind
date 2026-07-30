@@ -1,6 +1,6 @@
 # Roadmap
 
-## Completed in R1.4.5
+## Completed in R1.5
 
 - Server-side recovery state machine
 - Clean and controlled-failure paths
@@ -8,12 +8,13 @@
 - Idempotency keys and portable receipts
 - Rialo signed proof and receipt-hash anchoring
 - Public receipt verifier and tamper challenge
-- Shareable verification summary/report
-- Public-demo documentation and regression checks
+- Shareable verification summary and report
+- Responsive final UI and regression checks
+- Final demo and release documentation
 
-## Next technical milestone
+## Next protocol milestone
 
-A dedicated Rialo receipt registry/program that stores typed receipt commitments and exposes first-class lookup semantics. This should be treated as a separate protocol milestone, not silently represented as part of R1.4.5.
+Build a dedicated Rialo receipt registry/program that stores typed receipt commitments and exposes first-class lookup semantics. This is a separate protocol milestone and is not represented as part of R1.5.
 
 ## Production integrations
 
@@ -23,3 +24,4 @@ A dedicated Rialo receipt registry/program that stores typed receipt commitments
 - Production escrow and authorization policy
 - Persistent execution storage and observability
 - Authentication, tenancy, and operator permissions
+- Operational key management and audit logging

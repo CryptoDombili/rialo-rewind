@@ -16,7 +16,7 @@ The public verifier does not upload the full receipt. It sends only public ancho
 
 ## Non-goals
 
-- R1.4.5 is not a custody system.
+- R1.5 is not a custody system.
 - It is not connected to production commerce providers.
 - It does not replace authorization, authentication, audit retention, or compliance controls.
 - The hash-derived commitment transfer is not a dedicated Rialo registry program.

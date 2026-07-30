@@ -3,7 +3,7 @@ export async function executeServerWorkflow(mode) {
     method: "POST",
     headers: {
       "content-type": "application/json",
-      "x-rewind-engine": "r1.4.5",
+      "x-rewind-engine": "r1.5.0",
     },
     body: JSON.stringify({ mode }),
   });

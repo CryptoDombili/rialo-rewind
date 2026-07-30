@@ -1,40 +1,47 @@
-# Rialo Rewind R1.4.5
+# Rialo Rewind R1.5
 
 Native compensation and recovery engine for real-world workflows on Rialo.
 
-R1.4.5 refines the polished public-demo release with a better-spaced step-04 failure card and a gently animated signal sky. It combines a server-side recovery state machine, portable SHA-256 receipts, real Rialo devnet receipt anchoring, public verification, deterministic tamper detection, and shareable verification reports.
+R1.5 is the final public-demo release. It demonstrates a server-side workflow that can complete normally, stop at a controlled downstream failure, compensate prior business effects in reverse order, issue a portable receipt, anchor that receipt on Rialo devnet, and let any viewer verify or reject the receipt locally.
 
-## What is real
+## Core capabilities
 
-- Rialo devnet telemetry and signed transaction proof
 - Server-side forward workflow execution through `/api/workflow`
-- Three-attempt courier failure boundary
+- Clean settlement and controlled HTTP 503 failure paths
+- Three-attempt courier retry ceiling
 - Reverse compensation in `refund → cancel → release` order
 - Workflow-scoped idempotency keys
 - Before/after business state and event traces
-- Portable `rialo-rewind.receipt.v2` JSON receipt
-- SHA-256 receipt integrity hash
-- Real Rialo devnet hash-derived commitment transaction
+- Portable `rialo-rewind.receipt.v2` JSON receipts
+- SHA-256 receipt integrity hashes
+- Real Rialo devnet signed proof and receipt-hash commitment transaction
 - Transaction-index or account-state anchor verification
 - Browser-local public receipt verification
 - Deterministic `VALID` and `TAMPERED` challenge paths
-- Copyable verification summary and downloadable verification report
+- Copyable verification summaries and downloadable verification reports
+- Responsive recovery-console UI with animated Rialo signal field
 - Same-origin API checks, input validation, no-store responses, and rate limiting
 
 ## Honest boundary
 
-The inventory, escrow, merchant, and courier adapters are controlled server-side sandbox systems built to demonstrate recovery semantics. They are not connected to third-party production commerce APIs. The anchor is a real Rialo devnet transfer to a receipt-hash-derived commitment address; it is not a dedicated Rialo registry program or memo instruction.
+The inventory, escrow, merchant, and courier adapters are controlled server-side sandbox systems built to demonstrate recovery semantics. They are not connected to third-party production commerce APIs.
+
+The receipt anchor is a real Rialo devnet transfer to a receipt-hash-derived commitment address. It is not represented as a dedicated Rialo registry program or memo instruction.
+
+Rialo Rewind does not require a browser wallet. Devnet proof actions use disposable server-side keys, and no seed phrase or private key reaches the browser.
 
 ## Demo path
 
-1. Run **RUN CLEAN FLOW** and inspect the `SETTLED` receipt.
-2. Reset, run **INJECT FAILURE**, and watch three courier retries.
-3. Confirm `refund → cancel → release` and `COMPENSATED`.
-4. Click **ANCHOR RECEIPT** and wait for Rialo confirmation.
-5. Export the receipt JSON.
-6. Open **VERIFY**, load the receipt, and confirm `VALID`.
-7. Run **TAMPER TEST** and confirm `TAMPERED` before any chain query.
-8. Copy the verification summary or download the public verification report.
+1. Run **RUN CLEAN FLOW** and confirm `SETTLED`.
+2. Reset and run **INJECT FAILURE**.
+3. Observe three courier retries and the failed `CREATE SHIPMENT` step.
+4. Confirm reverse compensation: `refund → cancel → release`.
+5. Confirm the final `COMPENSATED` receipt.
+6. Select **ANCHOR RECEIPT** and wait for Rialo confirmation.
+7. Export the receipt JSON.
+8. Open **VERIFY**, load the receipt, and confirm `VALID`.
+9. Run **TAMPER TEST** and confirm `TAMPERED` before any chain query.
+10. Copy the verification summary or download the public report.
 
 See [`docs/DEMO.md`](docs/DEMO.md) for the presenter checklist.
 
@@ -54,8 +61,8 @@ npm run smoke
 - `src/rialo/` — Rialo CDK clients and proof/anchor adapters
 - `src/receipt-verifier.js` — browser-local verifier and report export
 - `tests/` — model, engine, API contract, UI contract, and version tests
-- `docs/` — architecture, security, roadmap, and demo guide
+- `docs/` — architecture, security, roadmap, demo, and release checklist
 
-## Release
+## Release status
 
-R1.4.5 freezes the visual system and public demo flow. Future work belongs in a dedicated Rialo registry/program milestone rather than further expanding this demo surface.
+R1.5 freezes the public demo surface. Future development should focus on a dedicated Rialo receipt registry/program and production adapters rather than adding cosmetic features to this release.
