@@ -1,14 +1,41 @@
 # Rialo Rewind R1.5.3
 
-R1.5.3 places OPEN SOURCE at the right edge of the case strip while preserving the original DEVNET and SIGNED PROOF layout.
+**Native compensation and recovery engine for real-world workflows on Rialo.**
 
-Native compensation and recovery engine for real-world workflows on Rialo.
+[Live demo](https://rialo-rewind.vercel.app) · [Architecture](docs/ARCHITECTURE.md) · [Security](docs/SECURITY.md) · [Demo guide](docs/DEMO.md)
 
-R1.5.3 is the final public-demo release. It demonstrates a server-side workflow that can complete normally, stop at a controlled downstream failure, compensate prior business effects in reverse order, issue a portable receipt, anchor that receipt on Rialo devnet, and let any viewer verify or reject the receipt locally.
+Rialo Rewind demonstrates a server-side workflow that can complete normally, stop at a controlled downstream failure, compensate prior business effects in reverse order, issue a portable receipt, anchor that receipt on Rialo devnet, and let any viewer independently verify or reject the receipt.
 
-## Open source
+![Rialo Rewind recovery console](docs/screenshots/01-console.png)
 
-The live console includes an **OPEN SOURCE** header control that links directly to this public repository.
+## What it proves
+
+- A clean five-step workflow can settle normally.
+- A courier failure is retried three times before forward execution stops.
+- Completed business effects are compensated in reverse order: `refund → cancel → release`.
+- Recovery actions use workflow-scoped idempotency keys.
+- The final receipt is portable JSON with a SHA-256 integrity hash.
+- The receipt hash is committed through a real Rialo devnet transaction.
+- An unchanged receipt verifies as `VALID`.
+- A modified receipt is rejected as `TAMPERED` before any chain query.
+
+## Verified flows
+
+### Clean settlement
+
+![Clean workflow settled](docs/screenshots/02-settled.png)
+
+### Automatic recovery and Rialo anchoring
+
+![Compensated workflow anchored on Rialo](docs/screenshots/03-compensated-anchored.png)
+
+### Public receipt verification
+
+![Valid receipt verification](docs/screenshots/04-valid-receipt.png)
+
+### Local tamper rejection
+
+![Tampered receipt rejected](docs/screenshots/05-tampered-receipt.png)
 
 ## Core capabilities
 
@@ -51,6 +78,19 @@ Rialo Rewind does not require a browser wallet. Devnet proof actions use disposa
 
 See [`docs/DEMO.md`](docs/DEMO.md) for the presenter checklist.
 
+## Validation status
+
+Verified on 30 July 2026:
+
+- `31/31` automated tests passed
+- JavaScript syntax checks passed
+- Static production smoke check passed
+- Production clean flow reached `SETTLED`
+- Production failure flow reached `COMPENSATED`
+- Receipt anchoring reached `ANCHORED`
+- Original receipt verified as `VALID`
+- Simulated alteration was rejected as `TAMPERED`
+
 ## Commands
 
 ```bash
@@ -67,7 +107,7 @@ npm run smoke
 - `src/rialo/` — Rialo CDK clients and proof/anchor adapters
 - `src/receipt-verifier.js` — browser-local verifier and report export
 - `tests/` — model, engine, API contract, UI contract, and version tests
-- `docs/` — architecture, security, roadmap, demo, and release checklist
+- `docs/` — architecture, security, roadmap, screenshots, demo, and release materials
 
 ## Release status
 
