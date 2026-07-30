@@ -1,8 +1,8 @@
-# Rialo Rewind R1.2.1
+# Rialo Rewind R1.2.2
 
 Native compensation and recovery engine for real-world workflows on Rialo.
 
-R1.2.1 combines the server-side recovery state machine, Rialo receipt anchoring, and public receipt verification. The clean and controlled-failure flows are executed inside `/api/workflow`; the browser only replays the events returned by that execution.
+R1.2.2 combines the server-side recovery state machine, Rialo receipt anchoring, and public receipt verification. The clean and controlled-failure flows are executed inside `/api/workflow`; the browser only replays the events returned by that execution.
 
 ## What is real
 
@@ -27,9 +27,9 @@ npm run check
 ```
 
 
-## R1.2.1 public receipt verifier
+## R1.2.2 public receipt verifier
 
-R1.2.1 adds a browser-side verifier for exported `rialo-rewind.receipt.v2` JSON files. The verifier:
+R1.2.2 adds a browser-side verifier for exported `rialo-rewind.receipt.v2` JSON files. The verifier:
 
 - parses the receipt locally without uploading the full file,
 - recomputes the SHA-256 receipt hash after excluding `receiptHash` and `onchainAnchor`,
@@ -40,8 +40,13 @@ R1.2.1 adds a browser-side verifier for exported `rialo-rewind.receipt.v2` JSON 
 Possible results are `VALID`, `TAMPERED`, `PENDING`, `UNVERIFIED`, or `INVALID`.
 
 
-## R1.2.1 verifier hotfix
+## R1.2.2 verifier hotfix
 
 - Cache-busted the browser entry assets.
 - Routed the verifier launch through the central action controller.
 - Isolated verifier, devnet, and signed-proof initialization so one module cannot block another.
+
+
+## R1.2.2 verifier controls fix
+
+R1.2.2 restores the Rialo anchor DOM fields required by the recovery console, initializes the verifier before the main console reset, and makes the verifier controls independently resilient. This prevents a missing optional panel field from disabling Load, Close, Reset, or drag-and-drop.

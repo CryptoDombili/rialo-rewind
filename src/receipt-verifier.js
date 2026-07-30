@@ -40,6 +40,10 @@ export function initReceiptVerifier({ showToast = () => {} } = {}) {
     chain: modal.querySelector('[data-verifier-step="chain"]'),
   };
 
+  const required = { fileInput, dropzone, loadButton, resetButton, result, badge, headline, description, fileName, suppliedHash, computedHash, commitment, signature, block, mode, workflow, execution, ...steps };
+  const missing = Object.entries(required).filter(([, element]) => !element).map(([name]) => name);
+  if (missing.length) throw new Error(`Receipt verifier DOM is incomplete: ${missing.join(", ")}`);
+
   let busy = false;
 
   function setStep(name, state, label) {
@@ -66,7 +70,7 @@ export function initReceiptVerifier({ showToast = () => {} } = {}) {
     execution.textContent = "—";
     Object.keys(steps).forEach((name) => setStep(name, "idle", "WAITING"));
     loadButton.disabled = false;
-    resetButton.disabled = true;
+    resetButton.disabled = false;
   }
 
   function open() {
@@ -85,10 +89,12 @@ export function initReceiptVerifier({ showToast = () => {} } = {}) {
     badge.textContent = state;
     headline.textContent = text;
     description.textContent = detail;
-    summaryStatus.textContent = state;
-    summaryStatus.dataset.tone = state.toLowerCase();
-    summaryHash.textContent = computedHash.textContent;
-    summaryAnchor.textContent = commitment.textContent;
+    if (summaryStatus) {
+      summaryStatus.textContent = state;
+      summaryStatus.dataset.tone = state.toLowerCase();
+    }
+    if (summaryHash) summaryHash.textContent = computedHash.textContent;
+    if (summaryAnchor) summaryAnchor.textContent = commitment.textContent;
   }
 
   async function verifyFile(file) {
