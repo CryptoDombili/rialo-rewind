@@ -91,7 +91,7 @@ export function shortVerifierValue(value, size = 12) {
 
 
 export const VERIFICATION_REPORT_SCHEMA = "rialo-rewind.verification-report.v1";
-export const VERIFIER_VERSION = "r1.5.0";
+export const VERIFIER_VERSION = "r1.5.1";
 
 export function buildVerificationReport({
   verdict,

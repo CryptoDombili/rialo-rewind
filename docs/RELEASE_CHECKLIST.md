@@ -1,4 +1,4 @@
-# R1.5 Release Checklist
+# R1.5.1 Release Checklist
 
 ## Repository
 
@@ -14,7 +14,7 @@
 
 ## Production checks
 
-- [ ] Build label shows `R1.5`.
+- [ ] Build label shows `R1.5.1`.
 - [ ] Devnet block height loads.
 - [ ] Clean flow reaches `SETTLED`.
 - [ ] Failure flow reaches `COMPENSATED`.
@@ -25,6 +25,6 @@
 
 ## GitHub release
 
-- [ ] Create tag `r1.5.0`.
-- [ ] Create release title `Rialo Rewind R1.5`.
+- [ ] Create tag `r1.5.1`.
+- [ ] Create release title `Rialo Rewind R1.5.1`.
 - [ ] Include live URL, demo summary, honest boundary, and test result.

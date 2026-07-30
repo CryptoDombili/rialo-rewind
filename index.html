@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="description" content="Rialo Rewind — native compensation for real-world workflows." />
   <title>Rialo Rewind — Recovery Console</title>
-  <link rel="stylesheet" href="/src/styles/app.css?v=r1.5.0" />
+  <link rel="stylesheet" href="/src/styles/app.css?v=r1.5.1" />
 </head>
 <body>
   <div class="app" id="app" data-flow="idle">
@@ -16,6 +16,11 @@
       </a>
       <div class="case-strip">
         <span class="label">ACTIVE CASE</span><strong>RW–0247</strong><span class="divider"></span><span>ORDER FULFILLMENT</span><span class="divider"></span><span>50.00 RLO ESCROW</span>
+        <span class="divider source-divider" aria-hidden="true"></span>
+        <a class="source-button" href="https://github.com/CryptoDombili/rialo-rewind" target="_blank" rel="noopener noreferrer" aria-label="Open Rialo Rewind source code on GitHub">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8a9.2 9.2 0 0 0-2.9 17.9c.46.09.63-.2.63-.45v-1.77c-2.57.56-3.11-1.09-3.11-1.09-.42-1.07-1.03-1.36-1.03-1.36-.84-.58.06-.57.06-.57.93.07 1.42.96 1.42.96.83 1.42 2.17 1.01 2.7.77.08-.6.32-1.01.59-1.24-2.05-.23-4.2-1.03-4.2-4.57 0-1.01.36-1.84.95-2.49-.1-.23-.41-1.18.09-2.45 0 0 .78-.25 2.53.95A8.8 8.8 0 0 1 12 7.08a8.8 8.8 0 0 1 2.31.31c1.75-1.2 2.52-.95 2.52-.95.51 1.27.19 2.22.1 2.45.59.65.95 1.48.95 2.49 0 3.55-2.16 4.33-4.22 4.56.33.29.63.85.63 1.72v2.59c0 .25.17.54.64.45A9.2 9.2 0 0 0 12 2.8Z"/></svg>
+          <span>OPEN SOURCE</span><b>↗</b>
+        </a>
       </div>
       <div class="top-actions">
         <div class="network-state" id="networkState" data-tone="probing"><i></i><span id="networkLabel">DEVNET CHECKING</span></div>
@@ -38,7 +43,7 @@
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 4 7v5c0 5 3.4 8.3 8 9 4.6-.7 8-4 8-9V7l-8-4Z"/><path d="m8.5 12 2.2 2.2 4.8-5"/></svg><span>VERIFY</span>
         </button>
       </div>
-      <div class="rail-version"><span>BUILD</span><strong>R1.5</strong></div>
+      <div class="rail-version"><span>BUILD</span><strong>R1.5.1</strong></div>
     </aside>
 
     <main class="workspace">
@@ -164,7 +169,7 @@
       </section>
 
       <section class="rail-view verifier-summary" data-panel="verify">
-        <div class="inspector-head"><span>PUBLIC VERIFIER</span><span>R1.5</span></div>
+        <div class="inspector-head"><span>PUBLIC VERIFIER</span><span>R1.5.1</span></div>
         <div class="summary-card verifier-summary-card"><div class="summary-head"><span>RECEIPT STATUS</span><strong id="publicVerifierStatus">NOT RUN</strong></div><h3>Verify any Rewind receipt</h3><p>Load an exported JSON receipt. Its SHA-256 hash is recomputed locally, then its public commitment is checked against Rialo devnet.</p><button class="proof-launch" type="button" data-action="receipt-verifier">OPEN RECEIPT VERIFIER <span>↗</span></button></div>
         <div class="summary-card"><div class="summary-head"><span>LAST CHECK</span><span>LOCAL + RIALO</span></div><ul class="summary-list"><li><span>Computed hash</span><strong id="publicVerifierHash">—</strong></li><li><span>Commitment</span><strong id="publicVerifierAnchor">—</strong></li><li><span>Private upload</span><strong>NO</strong></li></ul></div>
       </section>
@@ -172,7 +177,7 @@
 
     <div class="modal-backdrop" id="proofLabModal" aria-hidden="true">
       <div class="modal modal-wide proof-lab" role="dialog" aria-modal="true" aria-labelledby="proofLabTitle">
-        <div class="modal-head"><span>RIALO DEVNET PROOF / R1.5</span><button class="modal-close" type="button" data-action="close-modal" aria-label="Close">×</button></div>
+        <div class="modal-head"><span>RIALO DEVNET PROOF / R1.5.1</span><button class="modal-close" type="button" data-action="close-modal" aria-label="Close">×</button></div>
         <div class="proof-lab-body">
           <section class="proof-lab-intro">
             <div><span class="status-pill"><i></i> REAL DEVNET TRANSACTION</span><h3 id="proofLabTitle">Verify the network, then create one proof.</h3><p>First, the official Rialo CDK verifies devnet. Then a disposable server-side keypair is funded and signs a test transfer. Finality is proven by the transaction index or by sender-debit and recipient-credit account state. No seed phrase or private key reaches the browser.</p></div>
@@ -211,7 +216,7 @@
 
     <div class="modal-backdrop" id="receiptVerifierModal" aria-hidden="true">
       <div class="modal receipt-verifier" role="dialog" aria-modal="true" aria-labelledby="verifierTitle">
-        <div class="modal-head"><span>PUBLIC RECEIPT VERIFIER / R1.5</span><button class="modal-close" type="button" data-verifier-close aria-label="Close">×</button></div>
+        <div class="modal-head"><span>PUBLIC RECEIPT VERIFIER / R1.5.1</span><button class="modal-close" type="button" data-verifier-close aria-label="Close">×</button></div>
         <div class="verifier-body">
           <section class="verifier-intro">
             <div><span class="status-pill"><i></i> LOCAL HASH + RIALO PROOF</span><h3 id="verifierTitle">Prove a recovery receipt has not been altered.</h3><p>The JSON file is parsed and hashed locally in your browser. Only the receipt's public anchor evidence is sent to the read-only Rialo verification endpoint.</p></div>
@@ -240,6 +245,6 @@
 
     <div class="toast" id="toast" role="status" aria-live="polite"><strong id="toastTitle">CONSOLE READY</strong><span id="toastText">All controls are active.</span></div>
   </div>
-  <script type="module" src="/src/app.js?v=r1.5.0"></script>
+  <script type="module" src="/src/app.js?v=r1.5.1"></script>
 </body>
 </html>

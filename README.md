@@ -1,8 +1,12 @@
-# Rialo Rewind R1.5
+# Rialo Rewind R1.5.1
 
 Native compensation and recovery engine for real-world workflows on Rialo.
 
-R1.5 is the final public-demo release. It demonstrates a server-side workflow that can complete normally, stop at a controlled downstream failure, compensate prior business effects in reverse order, issue a portable receipt, anchor that receipt on Rialo devnet, and let any viewer verify or reject the receipt locally.
+R1.5.1 is the final public-demo release. It demonstrates a server-side workflow that can complete normally, stop at a controlled downstream failure, compensate prior business effects in reverse order, issue a portable receipt, anchor that receipt on Rialo devnet, and let any viewer verify or reject the receipt locally.
+
+## Open source
+
+The live console includes an **OPEN SOURCE** header control that links directly to this public repository.
 
 ## Core capabilities
 
@@ -65,4 +69,4 @@ npm run smoke
 
 ## Release status
 
-R1.5 freezes the public demo surface. Future development should focus on a dedicated Rialo receipt registry/program and production adapters rather than adding cosmetic features to this release.
+R1.5.1 freezes the public demo surface. Future development should focus on a dedicated Rialo receipt registry/program and production adapters rather than adding cosmetic features to this release.
