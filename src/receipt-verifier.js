@@ -202,4 +202,5 @@ export function initReceiptVerifier({ showToast = () => {} } = {}) {
     if (event.key === "Escape" && modal.classList.contains("is-visible")) close();
   });
   reset();
+  return Object.freeze({ open, close, reset, verifyFile });
 }

@@ -61,6 +61,7 @@ import { initReceiptVerifier } from "./receipt-verifier.js";
       let lastReceipt = null;
       let lastAnchor = null;
       let toastTimer = null;
+      let receiptVerifierController = null;
 
       const sleep = (ms) => new Promise((resolve) => window.setTimeout(resolve, ms));
       const getNode = (name) => $(`[data-node="${name}"]`);
@@ -472,6 +473,15 @@ import { initReceiptVerifier } from "./receipt-verifier.js";
         else if (action === "reset") resetUI({ notify: true });
         else if (action === "receipt") exportReceipt();
         else if (action === "anchor") anchorReceipt();
+        else if (action === "receipt-verifier") {
+          if (receiptVerifierController?.open) receiptVerifierController.open();
+          else {
+            const verifierModal = $("#receiptVerifierModal");
+            verifierModal?.classList.add("is-visible");
+            verifierModal?.setAttribute("aria-hidden", "false");
+            $("#verifierLoadButton")?.focus();
+          }
+        }
         else if (action === "proof-lab") openProofLab();
         else if (action === "close-modal") closeProofLab();
         else if (action === "home") { resetUI({ notify: true }); }
@@ -487,8 +497,20 @@ import { initReceiptVerifier } from "./receipt-verifier.js";
       });
 
       resetUI({ keepLogs: true });
-      initDevnetPanel({ showToast });
-      initSignedProof({ showToast });
-      initReceiptVerifier({ showToast });
+      try {
+        receiptVerifierController = initReceiptVerifier({ showToast });
+      } catch (error) {
+        console.error("Receipt verifier initialization failed:", error);
+      }
+      try {
+        initDevnetPanel({ showToast });
+      } catch (error) {
+        console.error("Devnet panel initialization failed:", error);
+      }
+      try {
+        initSignedProof({ showToast });
+      } catch (error) {
+        console.error("Signed proof initialization failed:", error);
+      }
       setTimeout(() => showToast("CONSOLE READY", "Recovery engine ready. Rialo devnet health check started."), 350);
     })();

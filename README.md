@@ -1,8 +1,8 @@
-# Rialo Rewind R1.2
+# Rialo Rewind R1.2.1
 
 Native compensation and recovery engine for real-world workflows on Rialo.
 
-R1.2 combines the server-side recovery state machine, Rialo receipt anchoring, and public receipt verification. The clean and controlled-failure flows are executed inside `/api/workflow`; the browser only replays the events returned by that execution.
+R1.2.1 combines the server-side recovery state machine, Rialo receipt anchoring, and public receipt verification. The clean and controlled-failure flows are executed inside `/api/workflow`; the browser only replays the events returned by that execution.
 
 ## What is real
 
@@ -27,9 +27,9 @@ npm run check
 ```
 
 
-## R1.2 public receipt verifier
+## R1.2.1 public receipt verifier
 
-R1.2 adds a browser-side verifier for exported `rialo-rewind.receipt.v2` JSON files. The verifier:
+R1.2.1 adds a browser-side verifier for exported `rialo-rewind.receipt.v2` JSON files. The verifier:
 
 - parses the receipt locally without uploading the full file,
 - recomputes the SHA-256 receipt hash after excluding `receiptHash` and `onchainAnchor`,
@@ -38,3 +38,10 @@ R1.2 adds a browser-side verifier for exported `rialo-rewind.receipt.v2` JSON fi
 - performs a read-only Rialo devnet verification through the existing anchor endpoint.
 
 Possible results are `VALID`, `TAMPERED`, `PENDING`, `UNVERIFIED`, or `INVALID`.
+
+
+## R1.2.1 verifier hotfix
+
+- Cache-busted the browser entry assets.
+- Routed the verifier launch through the central action controller.
+- Isolated verifier, devnet, and signed-proof initialization so one module cannot block another.
