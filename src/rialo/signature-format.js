@@ -76,3 +76,13 @@ export function decodeSignatureText(value) {
   if (bytes.length !== 64) throw new Error("Rialo transaction signature must decode to 64 bytes.");
   return bytes;
 }
+
+export function decodePublicKeyText(value) {
+  const text = String(value || "").trim();
+  if (!BASE58_RE.test(text) || text.length < 32 || text.length > 64) {
+    throw new Error("Invalid Rialo public address.");
+  }
+  const bytes = decodeBase58(text);
+  if (bytes.length !== 32) throw new Error("Rialo public address must decode to 32 bytes.");
+  return bytes;
+}

@@ -13,7 +13,8 @@ const AIRDROP_KELVIN = 50_000_000n; // 0.05 RLO
 const TRANSFER_KELVIN = 1_000_000n; // 0.001 RLO
 const KELVIN_PER_RLO = 1_000_000_000n;
 const FUNDING_TIMEOUT_MS = 24_000;
-const FINALITY_TIMEOUT_MS = 24_000;
+const FINALITY_TIMEOUT_MS = 9_000;
+const STATE_TIMEOUT_MS = 10_000;
 const POLL_INTERVAL_MS = 750;
 const RATE_WINDOW_MS = 120_000;
 
@@ -98,22 +99,65 @@ function transactionVisible(value) {
   return true;
 }
 
-async function waitForTransaction(client, signature, timeoutMs) {
+function unwrapArray(value) {
+  if (Array.isArray(value)) return value;
+  if (value && typeof value === "object" && Object.prototype.hasOwnProperty.call(value, "value")) {
+    return unwrapArray(value.value);
+  }
+  return [];
+}
+
+function historyHasSignature(history, signatureText) {
+  return unwrapArray(history).some((entry) => {
+    const candidate = entry?.signature ?? entry;
+    try {
+      return normalizeRpcSignature(candidate) === signatureText;
+    } catch {
+      return String(candidate || "") === signatureText;
+    }
+  });
+}
+
+async function waitForTransaction(client, signature, signatureText, sender, timeoutMs) {
   const deadline = Date.now() + timeoutMs;
   let lastError = null;
   while (Date.now() < deadline) {
     try {
-      const transaction = await client.getTransaction(signature);
-      if (transactionVisible(transaction)) return transaction;
+      const [transaction, history] = await Promise.all([
+        client.getTransaction(signature).catch(() => null),
+        client.getSignaturesForAddress(sender).catch(() => []),
+      ]);
+      if (transactionVisible(transaction) || historyHasSignature(history, signatureText)) {
+        return { transaction, history };
+      }
     } catch (error) {
       lastError = error;
     }
     await sleep(POLL_INTERVAL_MS);
   }
-  const error = new Error("Transfer was submitted, but finality was not visible before timeout.");
-  error.code = "FINALITY_TIMEOUT";
+  const error = new Error("Transfer was submitted, but transaction indexing was not visible before timeout.");
+  error.code = "INDEX_TIMEOUT";
   error.cause = lastError;
   throw error;
+}
+
+async function waitForStateEvidence(client, sender, recipient, balanceBefore, timeoutMs) {
+  const deadline = Date.now() + timeoutMs;
+  let senderBalance = balanceBefore;
+  let recipientBalance = 0n;
+  while (Date.now() < deadline) {
+    [senderBalance, recipientBalance] = await Promise.all([
+      client.getBalance(sender).then(BigInt).catch(() => senderBalance),
+      client.getBalance(recipient).then(BigInt).catch(() => recipientBalance),
+    ]);
+    const senderDebited = senderBalance <= balanceBefore - TRANSFER_KELVIN;
+    const recipientCredited = recipientBalance >= TRANSFER_KELVIN;
+    if (senderDebited && recipientCredited) {
+      return { senderBalance, recipientBalance, verified: true };
+    }
+    await sleep(POLL_INTERVAL_MS);
+  }
+  return { senderBalance, recipientBalance, verified: false };
 }
 
 function stageError(stage, error, extra = {}) {
@@ -136,7 +180,7 @@ export default async function handler(req, res) {
   if (!sameOrigin(req)) {
     return send(res, 403, { ok: false, error: { message: "Same-origin request required." } });
   }
-  if (req.headers["x-rewind-proof"] !== "v0.8") {
+  if (req.headers["x-rewind-proof"] !== "v0.9") {
     return send(res, 400, { ok: false, error: { message: "Proof request header is missing." } });
   }
   if (req.body?.intent !== "signed-devnet-proof") {
@@ -203,48 +247,56 @@ export default async function handler(req, res) {
     }
 
     const signatureText = normalizeRpcSignature(transferSignature);
+    let indexed = false;
     try {
-      await waitForTransaction(client, transferSignature, FINALITY_TIMEOUT_MS);
-    } catch (error) {
-      const [balanceAfter, blockHeight] = await Promise.all([
-        client.getBalance(sender.publicKey).catch(() => balanceBefore),
-        client.getBlockHeight().catch(() => null),
-      ]);
-      return send(res, 200, {
-        ok: true,
-        status: "submitted",
-        network: "rialo:devnet",
-        sender: sender.publicKey.toString(),
-        recipient: recipient.publicKey.toString(),
-        signature: signatureText,
-        airdropSignature: normalizeRpcSignature(airdropSignature),
-        balanceBefore: formatRlo(balanceBefore),
-        balanceAfter: formatRlo(balanceAfter),
-        transfer: formatRlo(TRANSFER_KELVIN),
-        blockHeight: blockHeight === null ? null : blockHeight.toString(),
-        durationMs: Date.now() - started,
-        warning: errorMessage(error),
-      });
+      await waitForTransaction(client, transferSignature, signatureText, sender.publicKey, FINALITY_TIMEOUT_MS);
+      indexed = true;
+    } catch {
+      indexed = false;
     }
 
-    const [balanceAfter, blockHeight] = await Promise.all([
-      client.getBalance(sender.publicKey),
-      client.getBlockHeight().catch(() => null),
-    ]);
+    const state = await waitForStateEvidence(
+      client,
+      sender.publicKey,
+      recipient.publicKey,
+      balanceBefore,
+      indexed ? 1 : STATE_TIMEOUT_MS,
+    );
+    const blockHeight = await client.getBlockHeight().catch(() => null);
 
-    return send(res, 200, {
+    const common = {
       ok: true,
-      status: "confirmed",
       network: "rialo:devnet",
       sender: sender.publicKey.toString(),
       recipient: recipient.publicKey.toString(),
       signature: signatureText,
       airdropSignature: normalizeRpcSignature(airdropSignature),
       balanceBefore: formatRlo(balanceBefore),
-      balanceAfter: formatRlo(balanceAfter),
+      balanceAfter: formatRlo(state.senderBalance),
+      recipientBalance: formatRlo(state.recipientBalance),
+      balanceBeforeKelvin: balanceBefore.toString(),
+      transferKelvin: TRANSFER_KELVIN.toString(),
       transfer: formatRlo(TRANSFER_KELVIN),
       blockHeight: blockHeight === null ? null : blockHeight.toString(),
       durationMs: Date.now() - started,
+    };
+
+    if (indexed) {
+      return send(res, 200, { ...common, status: "confirmed", verificationMode: "transaction-index" });
+    }
+    if (state.verified) {
+      return send(res, 200, {
+        ...common,
+        status: "state-confirmed",
+        verificationMode: "account-state",
+        warning: "Transaction index is lagging, but sender debit and disposable recipient credit confirm execution.",
+      });
+    }
+    return send(res, 200, {
+      ...common,
+      status: "submitted",
+      verificationMode: "submitted",
+      warning: "Transfer was submitted; neither transaction index nor account-state evidence was visible before timeout.",
     });
   } catch (error) {
     console.error("signed-proof", error);

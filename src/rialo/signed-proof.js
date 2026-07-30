@@ -60,6 +60,7 @@ export function initSignedProof({ showToast }) {
   let active = false;
   let verifying = false;
   let lastSignature = "";
+  let lastProofEvidence = null;
   let progressTimers = [];
 
   const clearTimers = () => {
@@ -70,6 +71,12 @@ export function initSignedProof({ showToast }) {
   function exposeSignature(payload) {
     if (!payload?.signature) return;
     lastSignature = payload.signature;
+    lastProofEvidence = {
+      sender: payload.sender,
+      recipient: payload.recipient,
+      balanceBeforeKelvin: payload.balanceBeforeKelvin,
+      transferKelvin: payload.transferKelvin,
+    };
     setText("signedProofSignature", payload.signature);
     setText("proofSignatureShort", short(payload.signature, 5, 5));
     if (verifyButton) verifyButton.disabled = false;
@@ -86,6 +93,24 @@ export function initSignedProof({ showToast }) {
     if (announce) showToast("ONCHAIN PROOF CONFIRMED", `Rialo signature ${short(lastSignature)}.`);
   }
 
+  function markStateVerified(blockHeight, announce = true) {
+    setStep("confirm", "complete", "STATE VERIFIED");
+    setText(
+      "proofBlockResult",
+      blockHeight ? `Account-state proof at block ${blockHeight}` : "Sender debit + recipient credit verified",
+    );
+    setText("signedProofBadge", "STATE VERIFIED");
+    setText("proofSignedStatus", "STATE VERIFIED");
+    const result = byId("signedProofResult");
+    if (result) result.dataset.state = "success";
+    if (announce) {
+      showToast(
+        "ONCHAIN STATE VERIFIED",
+        "Rialo account balances prove execution while the transaction index catches up.",
+      );
+    }
+  }
+
   async function verifyOnchain({ announce = true } = {}) {
     if (!lastSignature || verifying) return false;
     verifying = true;
@@ -97,14 +122,18 @@ export function initSignedProof({ showToast }) {
         method: "POST",
         headers: {
           "content-type": "application/json",
-          "x-rewind-proof": "v0.8",
+          "x-rewind-proof": "v0.9",
         },
-        body: JSON.stringify({ signature: lastSignature }),
+        body: JSON.stringify({ signature: lastSignature, ...lastProofEvidence }),
       });
       const payload = await response.json().catch(() => ({}));
       if (payload.ok !== true) throw new Error(payload.error?.message || `Verification returned HTTP ${response.status}.`);
       if (payload.status === "confirmed") {
         markConfirmed(payload.blockHeight, announce);
+        return true;
+      }
+      if (payload.status === "state-confirmed") {
+        markStateVerified(payload.blockHeight, announce);
         return true;
       }
       setStep("confirm", "running", "SUBMITTED");
@@ -137,6 +166,7 @@ export function initSignedProof({ showToast }) {
     if (active) return;
     active = true;
     lastSignature = "";
+    lastProofEvidence = null;
     clearTimers();
     resetProofUi();
     runButton?.setAttribute("disabled", "");
@@ -160,7 +190,7 @@ export function initSignedProof({ showToast }) {
         method: "POST",
         headers: {
           "content-type": "application/json",
-          "x-rewind-proof": "v0.8",
+          "x-rewind-proof": "v0.9",
         },
         body: JSON.stringify({ intent: "signed-devnet-proof" }),
         signal: controller.signal,
@@ -192,6 +222,8 @@ export function initSignedProof({ showToast }) {
         if (result) result.dataset.state = "pending";
         showToast("PROOF SUBMITTED", "The base58 signature is valid. Rechecking finality automatically.");
         void autoVerify();
+      } else if (payload.status === "state-confirmed") {
+        markStateVerified(payload.blockHeight);
       } else {
         markConfirmed(payload.blockHeight);
       }

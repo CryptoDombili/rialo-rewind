@@ -1,6 +1,6 @@
 {
   "name": "rialo-rewind",
-  "version": "0.8.0",
+  "version": "0.9.0",
   "private": true,
   "type": "module",
   "description": "Native compensation and recovery console for real-world workflows on Rialo.",
