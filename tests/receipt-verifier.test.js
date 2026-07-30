@@ -10,7 +10,7 @@ import {
 function baseReceipt() {
   return {
     schema: "rialo-rewind.receipt.v2",
-    engineVersion: "r1.4.1",
+    engineVersion: "r1.4.2",
     engine: "vercel-server-state-machine",
     workflowId: "RW-0247",
     executionId: "test-execution",

@@ -661,7 +661,7 @@ body { font-size: 16px; }
 @media (max-width: 1450px) { .receipt-actions { grid-template-columns: 1fr; } .receipt-actions button + button { border-left: 0; border-top: 1px solid var(--line); } }
 
 
-/* PUBLIC RECEIPT VERIFIER — R1.4.1 */
+/* PUBLIC RECEIPT VERIFIER — R1.4.2 */
 .verifier-summary-card .summary-head strong { color: var(--muted); font: 800 9px/1 var(--mono); }
 .verifier-summary-card .summary-head strong[data-tone="valid"] { color: var(--acid); }
 .verifier-summary-card .summary-head strong[data-tone="tampered"],
@@ -726,7 +726,7 @@ body { font-size: 16px; }
 }
 
 
-/* R1.4.1 final product polish */
+/* R1.4.2 final product polish */
 .verifier-actions button { min-width: 0; padding-inline: 10px; white-space: nowrap; }
 .verifier-actions #verifierCopyButton:not(:disabled),
 .verifier-actions #verifierDownloadButton:not(:disabled) { color: var(--cyan); }
@@ -745,4 +745,162 @@ body { font-size: 16px; }
 }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+}
+
+
+/* R1.4.2 — ambient operations sky + failure-gate legibility */
+.process-field {
+  isolation: isolate;
+  background:
+    radial-gradient(ellipse at 50% 8%, rgba(137, 213, 197, .025), transparent 48%),
+    radial-gradient(ellipse at 73% 42%, rgba(201, 244, 67, .018), transparent 35%),
+    #0e1111;
+}
+
+.ambient-starfield {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+  opacity: .82;
+  -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,.92), rgba(0,0,0,.68) 72%, transparent 100%);
+  mask-image: linear-gradient(to bottom, rgba(0,0,0,.92), rgba(0,0,0,.68) 72%, transparent 100%);
+}
+.star-layer {
+  position: absolute;
+  inset: -7%;
+  background-repeat: no-repeat;
+  will-change: transform, opacity;
+}
+.star-layer-a {
+  background-image:
+    radial-gradient(circle at 4% 14%, rgba(242,239,229,.72) 0 1px, transparent 1.7px),
+    radial-gradient(circle at 12% 63%, rgba(137,213,197,.62) 0 1px, transparent 1.6px),
+    radial-gradient(circle at 19% 31%, rgba(242,239,229,.45) 0 1px, transparent 1.6px),
+    radial-gradient(circle at 27% 82%, rgba(201,244,67,.55) 0 1px, transparent 1.8px),
+    radial-gradient(circle at 35% 12%, rgba(242,239,229,.58) 0 1px, transparent 1.6px),
+    radial-gradient(circle at 43% 57%, rgba(137,213,197,.52) 0 1px, transparent 1.7px),
+    radial-gradient(circle at 51% 25%, rgba(242,239,229,.70) 0 1px, transparent 1.6px),
+    radial-gradient(circle at 58% 77%, rgba(242,239,229,.42) 0 1px, transparent 1.6px),
+    radial-gradient(circle at 66% 39%, rgba(201,244,67,.55) 0 1px, transparent 1.7px),
+    radial-gradient(circle at 74% 11%, rgba(242,239,229,.50) 0 1px, transparent 1.6px),
+    radial-gradient(circle at 82% 69%, rgba(137,213,197,.60) 0 1px, transparent 1.7px),
+    radial-gradient(circle at 91% 29%, rgba(242,239,229,.62) 0 1px, transparent 1.7px),
+    radial-gradient(circle at 96% 87%, rgba(201,244,67,.48) 0 1px, transparent 1.8px);
+  animation: rialoStarDrift 34s linear infinite;
+}
+.star-layer-b {
+  background-image:
+    radial-gradient(circle at 8% 42%, rgba(242,239,229,.30) 0 1px, transparent 1.5px),
+    radial-gradient(circle at 15% 86%, rgba(242,239,229,.36) 0 1px, transparent 1.5px),
+    radial-gradient(circle at 24% 19%, rgba(137,213,197,.34) 0 1px, transparent 1.6px),
+    radial-gradient(circle at 32% 48%, rgba(242,239,229,.32) 0 1px, transparent 1.5px),
+    radial-gradient(circle at 40% 91%, rgba(201,244,67,.34) 0 1px, transparent 1.7px),
+    radial-gradient(circle at 48% 8%, rgba(242,239,229,.36) 0 1px, transparent 1.5px),
+    radial-gradient(circle at 56% 51%, rgba(242,239,229,.28) 0 1px, transparent 1.5px),
+    radial-gradient(circle at 63% 88%, rgba(137,213,197,.34) 0 1px, transparent 1.6px),
+    radial-gradient(circle at 72% 24%, rgba(242,239,229,.38) 0 1px, transparent 1.5px),
+    radial-gradient(circle at 80% 47%, rgba(201,244,67,.35) 0 1px, transparent 1.7px),
+    radial-gradient(circle at 88% 79%, rgba(242,239,229,.32) 0 1px, transparent 1.5px),
+    radial-gradient(circle at 98% 53%, rgba(137,213,197,.32) 0 1px, transparent 1.6px);
+  animation: rialoStarTwinkle 7.5s ease-in-out infinite alternate;
+}
+.star-layer-c {
+  background-image:
+    radial-gradient(circle at 14% 23%, rgba(201,244,67,.78) 0 1.2px, rgba(201,244,67,.18) 1.3px 3px, transparent 3.3px),
+    radial-gradient(circle at 38% 69%, rgba(137,213,197,.68) 0 1.1px, rgba(137,213,197,.14) 1.2px 3px, transparent 3.2px),
+    radial-gradient(circle at 61% 18%, rgba(242,239,229,.75) 0 1.2px, rgba(242,239,229,.12) 1.3px 3px, transparent 3.2px),
+    radial-gradient(circle at 78% 62%, rgba(201,244,67,.72) 0 1.2px, rgba(201,244,67,.13) 1.3px 3px, transparent 3.2px),
+    radial-gradient(circle at 93% 16%, rgba(137,213,197,.65) 0 1.1px, rgba(137,213,197,.12) 1.2px 3px, transparent 3.2px);
+  opacity: .55;
+  filter: drop-shadow(0 0 4px rgba(201,244,67,.25));
+  animation: rialoSignalPulse 5.8s ease-in-out infinite alternate;
+}
+@keyframes rialoStarDrift {
+  from { transform: translate3d(-.8%, -.45%, 0); }
+  to { transform: translate3d(.8%, .45%, 0); }
+}
+@keyframes rialoStarTwinkle {
+  from { opacity: .24; transform: scale(1); }
+  to { opacity: .72; transform: scale(1.006); }
+}
+@keyframes rialoSignalPulse {
+  from { opacity: .25; }
+  to { opacity: .72; }
+}
+
+.field-grid { z-index: 1; }
+.field-axis,
+.direction-banner,
+.field-footnote { z-index: 2; }
+.workflow-line { z-index: 3; }
+
+/* Keep the courier failure diagnostic out from beneath the shipment card. */
+.fault-gate {
+  left: calc(73% + 96px);
+  top: 202px;
+  width: 150px;
+  transform: none;
+  padding: 12px 12px 12px 14px;
+  gap: 5px;
+  opacity: .82;
+  z-index: 6;
+  border: 1px solid rgba(255,90,55,.34);
+  border-left: 3px solid var(--red);
+  background: linear-gradient(145deg, rgba(32,17,14,.96), rgba(11,15,14,.94));
+  box-shadow: 0 16px 32px rgba(0,0,0,.34), inset 0 1px 0 rgba(255,255,255,.025);
+  backdrop-filter: blur(5px);
+}
+.fault-gate::before {
+  content: "";
+  position: absolute;
+  right: 100%;
+  top: 26px;
+  width: 25px;
+  height: 1px;
+  background: linear-gradient(to left, rgba(255,90,55,.72), transparent);
+}
+.fault-code { font-size: 29px; line-height: .92; }
+.fault-title { font-size: 10px; color: var(--paper); }
+.fault-subtitle { font-size: 8px; color: #9d8f89; overflow-wrap: anywhere; }
+.fault-attempt { font-size: 8px; min-height: 9px; }
+.app[data-flow="failed"] .fault-gate,
+.app[data-flow="compensating"] .fault-gate,
+.app[data-flow="recovered"] .fault-gate {
+  transform: scale(1.025);
+  opacity: 1;
+  border-color: var(--red);
+  box-shadow: 0 0 0 1px rgba(255,90,55,.08), 0 18px 38px rgba(0,0,0,.42), 0 0 28px rgba(255,90,55,.10);
+}
+
+/* Give the lower telemetry labels a deliberate safe area on 1080p and 2K screens. */
+.field-footnote {
+  bottom: 20px;
+  padding: 7px 10px;
+  color: #65716c;
+  background: linear-gradient(90deg, rgba(8,10,10,.72), rgba(8,10,10,.28), rgba(8,10,10,.72));
+}
+.direction-reverse { bottom: 64px; }
+.workflow-reverse { bottom: 188px; }
+
+@media (max-width: 1600px) {
+  .fault-gate {
+    left: 67%;
+    top: 286px;
+    width: 156px;
+    transform: translateX(-50%);
+  }
+  .fault-gate::before { display: none; }
+  .app[data-flow="failed"] .fault-gate,
+  .app[data-flow="compensating"] .fault-gate,
+  .app[data-flow="recovered"] .fault-gate {
+    transform: translateX(-50%) scale(1.025);
+  }
+}
+
+@media (max-height: 900px) {
+  .field-footnote { bottom: 15px; padding-block: 5px; }
+  .direction-reverse { bottom: 56px; }
+  .workflow-reverse { bottom: 174px; }
 }

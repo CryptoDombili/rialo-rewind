@@ -1,9 +1,9 @@
-# R1.4.1 Demo Checklist
+# R1.4.2 Demo Checklist
 
 ## Before recording
 
 - Open the production URL at 1080p or 2K.
-- Confirm the lower-left build label is `R1.4.1`.
+- Confirm the lower-left build label is `R1.4.2`.
 - Confirm Rialo devnet displays a live block height.
 - Keep one exported anchored receipt ready for the verifier segment.
 

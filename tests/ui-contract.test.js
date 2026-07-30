@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 
-test("R1.4.1 verifier UI exposes every required control exactly once", async () => {
+test("R1.4.2 verifier UI exposes every required control exactly once", async () => {
   const html = await readFile(new URL("../index.html", import.meta.url), "utf8");
   const ids = ["receiptVerifierModal", "verifierFileInput", "verifierDropzone", "verifierLoadButton", "verifierResetButton", "verifierTamperButton", "verifierCopyButton", "verifierDownloadButton", "verifierResult"];
   for (const id of ids) {

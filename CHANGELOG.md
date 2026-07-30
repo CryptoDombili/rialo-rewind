@@ -1,5 +1,12 @@
 # Changelog
 
+## R1.4.2 — Operations sky and failure-gate polish
+
+- Added a restrained, Rialo-themed animated starfield behind the workflow grid.
+- Repositioned the HTTP 503 failure diagnostic so its text is never hidden beneath the shipment node.
+- Added a lower safe area for compensation and telemetry labels on 1080p and 2K displays.
+- Preserved all R1.4.1 workflow, anchoring, verifier, report, and tamper-detection behavior.
+
 ## R1.4.1 — Tamper challenge hotfix
 
 - Fixed an undeclared `integrity` variable in the browser tamper challenge.
@@ -13,7 +20,7 @@
 - Restored focus after modal close and improved live status semantics.
 - Added reduced-motion behavior and 1080p/2K verifier action layouts.
 - Added UI-contract, report-model, version-consistency, and production smoke checks.
-- Rewrote README and demo/security documentation to match the real R1.4.1 boundary.
+- Rewrote README and demo/security documentation to match the real R1.4.2 boundary.
 
 ## R1.3 — Tamper challenge
 
