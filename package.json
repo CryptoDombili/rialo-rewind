@@ -1,0 +1,14 @@
+{
+  "name": "rialo-rewind",
+  "version": "0.4.0",
+  "private": true,
+  "type": "module",
+  "description": "Native compensation and recovery console for real-world workflows on Rialo.",
+  "scripts": {
+    "test": "node --test",
+    "check": "node --check src/app.js && node --check src/rialo/devnet-client.js && node --check src/rialo/devnet-panel.js && node --check api/rialo.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

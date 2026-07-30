@@ -1,22 +1,32 @@
-# Rialo Rewind v0.3
+# Rialo Rewind
 
-Self-contained interaction prototype for a Rialo-native compensation engine.
+**Native compensation and recovery for real-world workflows.**
 
-## Open locally
+Rialo Rewind demonstrates how a multi-step workflow can stop after a downstream failure, retry safely, and execute compensating actions in reverse order. The v0.4 console combines a deterministic local recovery engine with live Rialo devnet telemetry.
 
-Double-click `index.html`. No installation, terminal command, package manager, or internet connection is required.
+## What is real in v0.4
 
-## Working controls
+- Live Rialo devnet block-height probe through a restricted Vercel RPC function.
+- Public-address balance lookup and recent-activity query.
+- Deterministic forward and compensation execution state machine.
+- Retry ceiling, idempotent recovery policy, event stream, inspector, and portable receipt.
+- No fake wallet connection, fake signature, or fake onchain transaction.
 
-- Run Clean Flow
-- Inject Failure
-- Reset Console
-- Select every workflow node
-- Flow / Proof / Rules navigation
-- Connect Frost information modal
-- Export JSON receipt after a completed run
-- Keyboard shortcuts: `1`, `2`, `R`
+## What comes next
 
-## Scope
+The next milestone is a signed Rialo devnet transaction and then a deployed recovery registry/program. Until that is complete, the console clearly separates local workflow execution from live chain proof.
 
-This build is an interaction prototype. It does not imitate real wallet signatures or claim live Rialo devnet execution. Devnet integration comes after the technical probe.
+## Local use
+
+Open `index.html` through a local static server. The UI works locally, but live devnet telemetry requires the Vercel `/api/rialo` function.
+
+## Tests
+
+```bash
+npm test
+npm run check
+```
+
+## Security
+
+Only public account addresses are accepted in the devnet panel. Never paste a seed phrase or private key into the application.
