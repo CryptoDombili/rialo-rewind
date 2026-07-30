@@ -2,9 +2,9 @@
 
 Native compensation and recovery for real-world workflows on Rialo.
 
-Rialo Rewind demonstrates how a multi-step workflow can stop after a downstream failure, retry safely, and execute compensating actions in reverse order. The R0.10 console combines a deterministic recovery engine with live Rialo devnet telemetry and a real signed devnet transfer.
+Rialo Rewind demonstrates how a multi-step workflow can stop after a downstream failure, retry safely, and execute compensating actions in reverse order. The R0.11 console combines a deterministic recovery engine with live Rialo devnet telemetry and a real signed devnet transfer.
 
-## What is real in R0.10
+## What is real in R0.11
 
 - Live Rialo devnet block-height check through the official `@rialo/ts-cdk` client.
 - A disposable server-side Rialo keypair generated for each proof run.
@@ -27,7 +27,7 @@ The UI never labels a merely submitted transaction as confirmed.
 
 The signed-proof function uses disposable devnet-only keypairs. They exist in memory for one request, are disposed in `finally`, and are never returned to the browser. No seed phrase or private key is stored.
 
-The recovery flow itself remains a deterministic product engine in R0.10. The next milestone is a dedicated Rialo recovery registry/program that anchors workflow receipts and compensation state onchain.
+The recovery flow itself remains a deterministic product engine in R0.11. The next milestone is a dedicated Rialo recovery registry/program that anchors workflow receipts and compensation state onchain.
 
 ## Local checks
 
@@ -38,7 +38,7 @@ npm run check
 
 Live RPC and signed proof require a Vercel deployment.
 
-## R0.10 verification upgrade
+## R0.11 verification upgrade
 
 - Keeps the base58 signature fix from v0.8.
 - Checks `getTransaction` and `getSignaturesForAddress` for index-level confirmation.
