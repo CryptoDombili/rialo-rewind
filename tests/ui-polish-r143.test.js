@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 
-test("R1.5.1 uses a dense signal sky and step-04 failure pointer", async () => {
+test("R1.5.2 uses a dense signal sky and step-04 failure pointer", async () => {
   const [html, css] = await Promise.all([
     readFile(new URL("../index.html", import.meta.url), "utf8"),
     readFile(new URL("../src/styles/app.css", import.meta.url), "utf8"),
