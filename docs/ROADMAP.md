@@ -8,7 +8,7 @@
 - Signed and confirmed system transfer.
 - Explorer-linked signature in the Proof Lab.
 
-## v0.6 — Recovery receipt registry
+## v0.7 — Recovery receipt registry
 
 - Deploy a dedicated Rialo program.
 - Anchor workflow ID, policy hash, result, failed step, compensation count, and receipt hash.
