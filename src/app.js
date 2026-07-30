@@ -404,5 +404,5 @@ import { createWorkflowReceipt, serializeReceipt } from "./core/receipt.js";
       resetUI({ keepLogs: true });
       initDevnetPanel({ showToast });
       initSignedProof({ showToast });
-      setTimeout(() => showToast("CONSOLE READY", "Local recovery engine ready. Live Rialo devnet probe started."), 350);
+      setTimeout(() => showToast("CONSOLE READY", "Recovery engine ready. Rialo devnet health check started."), 350);
     })();

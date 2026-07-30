@@ -36,6 +36,7 @@ export function initDevnetPanel({ showToast }) {
     text("devnetStatus", "CONNECTING");
     text("devnetHeight", "—");
     text("devnetLatency", "—");
+    text("devnetError", "");
 
     try {
       const height = await client.getBlockHeight();
@@ -46,20 +47,21 @@ export function initDevnetPanel({ showToast }) {
       text("devnetHeight", formatted);
       text("devnetLatency", `${height.latencyMs ?? "—"} ms`);
       text("proofNetworkStatus", "LIVE");
+      text("devnetError", "");
       text("proofBlockHeight", formatted);
       setNetworkTone("online");
       if (!quiet) showToast("RIALO DEVNET ONLINE", `Live block height ${formatted}.`);
     } catch (error) {
-      text("networkLabel", "DEVNET UNREACHABLE");
+      text("networkLabel", "DEVNET CHECK FAILED");
       text("networkBlock", "—");
-      text("devnetStatus", "OFFLINE");
+      text("devnetStatus", "CHECK FAILED");
       text("devnetHeight", "—");
       text("devnetLatency", "—");
-      text("proofNetworkStatus", "UNREACHABLE");
+      text("proofNetworkStatus", "CHECK FAILED");
       text("proofBlockHeight", "—");
       text("devnetError", error.message);
       setNetworkTone("offline");
-      if (!quiet) showToast("DEVNET PROBE FAILED", error.message);
+      if (!quiet) showToast("DEVNET CHECK FAILED", error.message);
     } finally {
       probing = false;
       probeButton?.removeAttribute("disabled");

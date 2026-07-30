@@ -18,7 +18,7 @@
         <span class="label">ACTIVE CASE</span><strong>RW–0247</strong><span class="divider"></span><span>ORDER FULFILLMENT</span><span class="divider"></span><span>50.00 RLO ESCROW</span>
       </div>
       <div class="top-actions">
-        <div class="network-state" id="networkState" data-tone="probing"><i></i><span id="networkLabel">DEVNET PROBING</span></div>
+        <div class="network-state" id="networkState" data-tone="probing"><i></i><span id="networkLabel">DEVNET CHECKING</span></div>
         <button class="connect-button" type="button" data-action="proof-lab">SIGNED PROOF <span>↗</span></button>
       </div>
     </header>
@@ -35,7 +35,7 @@
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 4 7v5c0 5 3.4 8.3 8 9 4.6-.7 8-4 8-9V7l-8-4Z"/><path d="m9 12 2 2 4-5"/></svg><span>RULES</span>
         </button>
       </div>
-      <div class="rail-version"><span>BUILD</span><strong>00.05</strong></div>
+      <div class="rail-version"><span>BUILD</span><strong>00.06</strong></div>
     </aside>
 
     <main class="workspace">
@@ -143,7 +143,7 @@
 
       <section class="rail-view proof-summary" data-panel="proof">
         <div class="inspector-head"><span>PROOF LAYER</span><span>RW–0247</span></div>
-        <div class="summary-card live-proof-card"><div class="summary-head"><span>RIALO DEVNET</span><span id="proofNetworkStatus">PROBING</span></div><h3>Live chain telemetry</h3><ul class="summary-list"><li><span>Finalized block</span><strong id="proofBlockHeight">—</strong></li><li><span>Signed proof</span><strong id="proofSignedStatus">NOT RUN</strong></li><li><span>Signature</span><strong id="proofSignatureShort">—</strong></li></ul><button class="proof-launch" type="button" data-action="proof-lab">OPEN SIGNED PROOF LAB <span>↗</span></button></div>
+        <div class="summary-card live-proof-card"><div class="summary-head"><span>RIALO DEVNET</span><span id="proofNetworkStatus">CHECKING</span></div><h3>Live chain telemetry</h3><ul class="summary-list"><li><span>Finalized block</span><strong id="proofBlockHeight">—</strong></li><li><span>Signed proof</span><strong id="proofSignedStatus">NOT RUN</strong></li><li><span>Signature</span><strong id="proofSignatureShort">—</strong></li></ul><button class="proof-launch" type="button" data-action="proof-lab">OPEN DEVNET PROOF <span>↗</span></button></div>
         <div class="summary-card"><div class="summary-head"><span>WORKFLOW RECEIPT</span><span id="proofStatus">WAITING</span></div><h3 id="proofTitle">No receipt issued</h3><p id="proofText">Run a clean flow or inject a failure. The console will produce a portable execution receipt.</p></div>
         <div class="summary-card"><div class="summary-head"><span>TRACE SUMMARY</span><span>DETERMINISTIC ENGINE</span></div><ul class="summary-list"><li><span>Workflow ID</span><strong>RW–0247</strong></li><li><span>Protected escrow</span><strong>50.00 RLO</strong></li><li><span>Forward steps</span><strong>5</strong></li><li><span>Compensation steps</span><strong>3</strong></li><li><span>Manual intervention</span><strong id="proofManual">—</strong></li></ul></div>
       </section>
@@ -158,18 +158,18 @@
 
     <div class="modal-backdrop" id="proofLabModal" aria-hidden="true">
       <div class="modal modal-wide proof-lab" role="dialog" aria-modal="true" aria-labelledby="proofLabTitle">
-        <div class="modal-head"><span>RIALO SIGNED PROOF LAB / DEVNET</span><button class="modal-close" type="button" data-action="close-modal" aria-label="Close">×</button></div>
+        <div class="modal-head"><span>RIALO DEVNET PROOF / V0.6</span><button class="modal-close" type="button" data-action="close-modal" aria-label="Close">×</button></div>
         <div class="proof-lab-body">
           <section class="proof-lab-intro">
-            <div><span class="status-pill"><i></i> REAL DEVNET TRANSACTION</span><h3 id="proofLabTitle">Generate, fund, sign and confirm.</h3><p>The proof runner creates two disposable server-side devnet keypairs, requests test RLO, signs a system transfer and returns the confirmed signature. No seed phrase is stored or sent to the browser.</p></div>
+            <div><span class="status-pill"><i></i> REAL DEVNET TRANSACTION</span><h3 id="proofLabTitle">Verify the network, then create one proof.</h3><p>First, the official Rialo CDK verifies devnet. Then one disposable server-side keypair is funded, signs a test transfer, and returns the confirmed signature. No seed phrase or private key reaches the browser.</p></div>
             <div class="proof-network-box">
               <span>NETWORK</span><strong id="devnetStatus">CONNECTING</strong><small>BLOCK <b id="devnetHeight">—</b></small><small>LATENCY <b id="devnetLatency">—</b></small>
             </div>
           </section>
 
           <div class="proof-actions-row">
-            <button type="button" id="probeDevnet" class="lab-secondary">PROBE NETWORK</button>
-            <button type="button" id="runSignedProof" class="lab-primary">RUN SIGNED DEVNET PROOF <span>↗</span></button>
+            <button type="button" id="probeDevnet" class="lab-secondary">CHECK DEVNET</button>
+            <button type="button" id="runSignedProof" class="lab-primary">CREATE SIGNED PROOF <span>↗</span></button>
           </div>
           <p class="devnet-error" id="devnetError"></p>
 
@@ -186,12 +186,9 @@
             <div class="proof-result-grid"><div><span>SENDER BEFORE</span><strong id="proofBalanceBefore">—</strong></div><div><span>SENDER AFTER</span><strong id="proofBalanceAfter">—</strong></div><div><span>RECIPIENT</span><strong id="proofRecipientShort">—</strong></div><div><span>DURATION</span><strong id="proofDuration">—</strong></div></div>
           </section>
 
-          <section class="account-probe">
-            <div class="account-probe-head"><span>PUBLIC ACCOUNT LOOKUP</span><strong id="accountStatus">READY</strong></div>
-            <label for="rialoAddress">RIALO PUBLIC ADDRESS</label>
-            <div class="account-input-row"><input id="rialoAddress" autocomplete="off" spellcheck="false" placeholder="Paste a public address — never a private key" /><button type="button" id="loadRialoAccount">LOAD ACCOUNT</button></div>
-            <small>Read-only query through the restricted Vercel RPC proxy.</small>
-            <div class="account-results"><div><span>BALANCE</span><strong id="accountBalance">—</strong></div><div><span>RECENT ACTIVITY</span><strong id="accountHistory">—</strong></div><a id="accountExplorerLink" href="#" target="_blank" rel="noreferrer" aria-disabled="true">OPEN ACCOUNT ↗</a></div>
+          <section class="proof-note">
+            <strong>ONE SAFE TEST</strong>
+            <p>This lab uses disposable devnet-only keys. Do not paste a seed phrase or private key anywhere.</p>
           </section>
         </div>
         <div class="modal-actions"><button type="button" data-action="close-modal">CLOSE LAB</button><button class="primary" type="button" id="copyProofSignature" disabled>COPY SIGNATURE</button></div>
