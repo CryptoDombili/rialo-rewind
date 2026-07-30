@@ -661,7 +661,7 @@ body { font-size: 16px; }
 @media (max-width: 1450px) { .receipt-actions { grid-template-columns: 1fr; } .receipt-actions button + button { border-left: 0; border-top: 1px solid var(--line); } }
 
 
-/* PUBLIC RECEIPT VERIFIER — R1.4.4 */
+/* PUBLIC RECEIPT VERIFIER — R1.4.5 */
 .verifier-summary-card .summary-head strong { color: var(--muted); font: 800 9px/1 var(--mono); }
 .verifier-summary-card .summary-head strong[data-tone="valid"] { color: var(--acid); }
 .verifier-summary-card .summary-head strong[data-tone="tampered"],
@@ -726,7 +726,7 @@ body { font-size: 16px; }
 }
 
 
-/* R1.4.4 final product polish */
+/* R1.4.5 final product polish */
 .verifier-actions button { min-width: 0; padding-inline: 10px; white-space: nowrap; }
 .verifier-actions #verifierCopyButton:not(:disabled),
 .verifier-actions #verifierDownloadButton:not(:disabled) { color: var(--cyan); }
@@ -748,13 +748,13 @@ body { font-size: 16px; }
 }
 
 
-/* R1.4.4 — courier-linked diagnostic + responsive clearance */
+/* R1.4.5 — animated starfield + fault-card clearance */
 .process-field {
   isolation: isolate;
   background:
-    radial-gradient(ellipse at 48% 6%, rgba(137, 213, 197, .035), transparent 46%),
-    radial-gradient(ellipse at 72% 46%, rgba(201, 244, 67, .024), transparent 34%),
-    radial-gradient(ellipse at 17% 68%, rgba(137, 213, 197, .018), transparent 35%),
+    radial-gradient(ellipse at 48% 6%, rgba(137, 213, 197, .042), transparent 46%),
+    radial-gradient(ellipse at 72% 46%, rgba(201, 244, 67, .028), transparent 34%),
+    radial-gradient(ellipse at 17% 68%, rgba(137, 213, 197, .020), transparent 35%),
     #0e1111;
 }
 
@@ -764,38 +764,36 @@ body { font-size: 16px; }
   overflow: hidden;
   pointer-events: none;
   z-index: 0;
-  opacity: .78;
-  -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,.98), rgba(0,0,0,.82) 74%, rgba(0,0,0,.18) 100%);
-  mask-image: linear-gradient(to bottom, rgba(0,0,0,.98), rgba(0,0,0,.82) 74%, rgba(0,0,0,.18) 100%);
+  opacity: .82;
+  -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,.98), rgba(0,0,0,.84) 74%, rgba(0,0,0,.20) 100%);
+  mask-image: linear-gradient(to bottom, rgba(0,0,0,.98), rgba(0,0,0,.84) 74%, rgba(0,0,0,.20) 100%);
 }
 .star-layer {
   position: absolute;
-  inset: -9%;
+  inset: -12%;
   pointer-events: none;
   will-change: transform, opacity;
 }
-/* Thousands of tiny, irregularly spaced signal points built from layered repeating fields. */
 .star-layer-a {
   background-image:
-    radial-gradient(circle, rgba(242,239,229,.46) 0 1px, transparent 1.45px),
+    radial-gradient(circle, rgba(242,239,229,.48) 0 1px, transparent 1.45px),
     radial-gradient(circle, rgba(137,213,197,.34) 0 .85px, transparent 1.35px),
     radial-gradient(circle, rgba(201,244,67,.22) 0 .9px, transparent 1.45px);
   background-size: 97px 83px, 151px 127px, 239px 211px;
   background-position: 13px 29px, 71px 17px, 113px 93px;
-  opacity: .62;
-  animation: rialoStarDrift 48s linear infinite;
+  opacity: .64;
+  animation: rialoStarDrift 28s ease-in-out infinite alternate;
 }
 .star-layer-b {
   background-image:
-    radial-gradient(circle, rgba(242,239,229,.25) 0 .75px, transparent 1.25px),
-    radial-gradient(circle, rgba(137,213,197,.23) 0 .75px, transparent 1.3px),
+    radial-gradient(circle, rgba(242,239,229,.26) 0 .75px, transparent 1.25px),
+    radial-gradient(circle, rgba(137,213,197,.24) 0 .75px, transparent 1.3px),
     radial-gradient(circle, rgba(242,239,229,.18) 0 .65px, transparent 1.15px);
   background-size: 67px 109px, 181px 149px, 263px 173px;
   background-position: 41px 7px, 19px 83px, 137px 31px;
-  opacity: .46;
-  animation: rialoStarTwinkle 8.6s ease-in-out infinite alternate;
+  opacity: .44;
+  animation: rialoStarTwinkle 11s ease-in-out infinite alternate;
 }
-/* Larger telemetry beacons: rare, soft and Rialo-acid/cyan rather than generic white stars. */
 .star-layer-c {
   background-image:
     radial-gradient(circle at 7% 18%, rgba(201,244,67,.95) 0 1.25px, rgba(201,244,67,.24) 1.35px 4px, transparent 4.5px),
@@ -808,19 +806,22 @@ body { font-size: 16px; }
     radial-gradient(circle at 96% 82%, rgba(137,213,197,.75) 0 1.1px, rgba(137,213,197,.14) 1.2px 3.5px, transparent 4px);
   opacity: .58;
   filter: drop-shadow(0 0 5px rgba(201,244,67,.17));
-  animation: rialoSignalPulse 6.8s ease-in-out infinite alternate;
+  animation: rialoSignalPulse 7.6s ease-in-out infinite alternate;
 }
 @keyframes rialoStarDrift {
-  from { transform: translate3d(-1.2%, -.7%, 0); }
-  to { transform: translate3d(1.2%, .7%, 0); }
+  0% { transform: translate3d(-2.2%, -1.1%, 0) scale(1); }
+  50% { transform: translate3d(.4%, .7%, 0) scale(1.01); }
+  100% { transform: translate3d(2.4%, 1.2%, 0) scale(1.015); }
 }
 @keyframes rialoStarTwinkle {
-  from { opacity: .30; transform: translate3d(.25%, -.2%, 0) scale(1); }
-  to { opacity: .64; transform: translate3d(-.25%, .2%, 0) scale(1.004); }
+  0% { opacity: .28; transform: translate3d(.5%, -.35%, 0) scale(1); }
+  50% { opacity: .55; transform: translate3d(-.35%, .25%, 0) scale(1.006); }
+  100% { opacity: .68; transform: translate3d(.8%, .45%, 0) scale(1.012); }
 }
 @keyframes rialoSignalPulse {
-  from { opacity: .30; }
-  to { opacity: .72; }
+  0% { opacity: .26; transform: translate3d(-.35%, 0, 0) scale(.985); }
+  50% { opacity: .58; transform: translate3d(.15%, -.25%, 0) scale(1); }
+  100% { opacity: .78; transform: translate3d(.45%, .15%, 0) scale(1.02); }
 }
 
 .field-grid { z-index: 1; opacity: .82; }
@@ -829,7 +830,6 @@ body { font-size: 16px; }
 .field-footnote { z-index: 2; }
 .workflow-line { z-index: 3; }
 
-/* Slightly tighter cards preserve the large type while creating more breathing room. */
 .workflow-node {
   width: 146px;
   min-height: 164px;
@@ -837,11 +837,11 @@ body { font-size: 16px; }
 }
 .reverse-node { min-height: 142px; }
 
-/* The failure diagnostic sits directly beneath step 04 and points back to the courier node. */
 .fault-gate {
-  left: 73%;
+  --fault-offset: 48px;
+  left: calc(73% - var(--fault-offset));
   top: 306px;
-  width: 128px;
+  width: 124px;
   min-height: 80px;
   transform: translateX(-50%);
   padding: 11px 10px 10px 13px;
@@ -854,14 +854,13 @@ body { font-size: 16px; }
   box-shadow: 0 15px 30px rgba(0,0,0,.36), inset 0 1px 0 rgba(255,255,255,.025);
   backdrop-filter: blur(5px);
 }
-/* A compact vertical tracer makes the diagnostic unambiguously belong to step 04. */
 .fault-gate::before {
   content: "";
   position: absolute;
-  left: 50%;
+  left: calc(50% + var(--fault-offset));
   bottom: 100%;
   width: 1px;
-  height: 38px;
+  height: 40px;
   transform: translateX(-50%);
   background: linear-gradient(to top, rgba(255,90,55,.9), rgba(255,90,55,.22));
   box-shadow: 0 0 10px rgba(255,90,55,.18);
@@ -869,8 +868,8 @@ body { font-size: 16px; }
 .fault-gate::after {
   content: "";
   position: absolute;
-  left: 50%;
-  bottom: calc(100% + 34px);
+  left: calc(50% + var(--fault-offset));
+  bottom: calc(100% + 36px);
   width: 7px;
   height: 7px;
   border-top: 1px solid var(--red-2);
@@ -890,7 +889,6 @@ body { font-size: 16px; }
   box-shadow: 0 0 0 1px rgba(255,90,55,.08), 0 18px 38px rgba(0,0,0,.42), 0 0 28px rgba(255,90,55,.10);
 }
 
-/* Give the lower telemetry labels a deliberate safe area on 1080p and 2K screens. */
 .field-footnote {
   bottom: 20px;
   padding: 7px 10px;
@@ -903,26 +901,26 @@ body { font-size: 16px; }
 @media (max-width: 1600px) {
   .workflow-node { width: 138px; }
   .fault-gate {
-    left: 73%;
-    top: 298px;
-    width: 122px;
+    --fault-offset: 44px;
+    top: 300px;
+    width: 120px;
   }
-  .fault-gate::before { height: 32px; }
-  .fault-gate::after { bottom: calc(100% + 28px); }
+  .fault-gate::before { height: 34px; }
+  .fault-gate::after { bottom: calc(100% + 30px); }
 }
 
 @media (max-width: 1360px) {
   .workflow-node { width: 130px; padding-inline: 11px; }
   .node-title { font-size: 17px; }
   .fault-gate {
-    left: 73%;
-    top: 286px;
-    width: 116px;
+    --fault-offset: 38px;
+    top: 288px;
+    width: 112px;
     min-height: 76px;
     padding-inline: 11px 8px;
   }
-  .fault-gate::before { height: 24px; }
-  .fault-gate::after { bottom: calc(100% + 20px); }
+  .fault-gate::before { height: 26px; }
+  .fault-gate::after { bottom: calc(100% + 22px); }
 }
 
 @media (max-height: 900px) {
@@ -930,12 +928,13 @@ body { font-size: 16px; }
   .direction-reverse { bottom: 56px; }
   .workflow-reverse { bottom: 174px; }
   .fault-gate {
-    top: 276px;
-    width: 112px;
+    --fault-offset: 42px;
+    top: 280px;
+    width: 114px;
     min-height: 72px;
   }
-  .fault-gate::before { height: 20px; }
-  .fault-gate::after { bottom: calc(100% + 16px); }
+  .fault-gate::before { height: 22px; }
+  .fault-gate::after { bottom: calc(100% + 18px); }
 }
 
 @media (prefers-reduced-motion: reduce) {

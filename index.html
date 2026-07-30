@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="description" content="Rialo Rewind — native compensation for real-world workflows." />
   <title>Rialo Rewind — Recovery Console</title>
-  <link rel="stylesheet" href="/src/styles/app.css?v=r1.4.4" />
+  <link rel="stylesheet" href="/src/styles/app.css?v=r1.4.5" />
 </head>
 <body>
   <div class="app" id="app" data-flow="idle">
@@ -38,7 +38,7 @@
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 4 7v5c0 5 3.4 8.3 8 9 4.6-.7 8-4 8-9V7l-8-4Z"/><path d="m8.5 12 2.2 2.2 4.8-5"/></svg><span>VERIFY</span>
         </button>
       </div>
-      <div class="rail-version"><span>BUILD</span><strong>R1.4.4</strong></div>
+      <div class="rail-version"><span>BUILD</span><strong>R1.4.5</strong></div>
     </aside>
 
     <main class="workspace">
@@ -164,7 +164,7 @@
       </section>
 
       <section class="rail-view verifier-summary" data-panel="verify">
-        <div class="inspector-head"><span>PUBLIC VERIFIER</span><span>R1.4.4</span></div>
+        <div class="inspector-head"><span>PUBLIC VERIFIER</span><span>R1.4.5</span></div>
         <div class="summary-card verifier-summary-card"><div class="summary-head"><span>RECEIPT STATUS</span><strong id="publicVerifierStatus">NOT RUN</strong></div><h3>Verify any Rewind receipt</h3><p>Load an exported JSON receipt. Its SHA-256 hash is recomputed locally, then its public commitment is checked against Rialo devnet.</p><button class="proof-launch" type="button" data-action="receipt-verifier">OPEN RECEIPT VERIFIER <span>↗</span></button></div>
         <div class="summary-card"><div class="summary-head"><span>LAST CHECK</span><span>LOCAL + RIALO</span></div><ul class="summary-list"><li><span>Computed hash</span><strong id="publicVerifierHash">—</strong></li><li><span>Commitment</span><strong id="publicVerifierAnchor">—</strong></li><li><span>Private upload</span><strong>NO</strong></li></ul></div>
       </section>
@@ -172,7 +172,7 @@
 
     <div class="modal-backdrop" id="proofLabModal" aria-hidden="true">
       <div class="modal modal-wide proof-lab" role="dialog" aria-modal="true" aria-labelledby="proofLabTitle">
-        <div class="modal-head"><span>RIALO DEVNET PROOF / R1.4.4</span><button class="modal-close" type="button" data-action="close-modal" aria-label="Close">×</button></div>
+        <div class="modal-head"><span>RIALO DEVNET PROOF / R1.4.5</span><button class="modal-close" type="button" data-action="close-modal" aria-label="Close">×</button></div>
         <div class="proof-lab-body">
           <section class="proof-lab-intro">
             <div><span class="status-pill"><i></i> REAL DEVNET TRANSACTION</span><h3 id="proofLabTitle">Verify the network, then create one proof.</h3><p>First, the official Rialo CDK verifies devnet. Then a disposable server-side keypair is funded and signs a test transfer. Finality is proven by the transaction index or by sender-debit and recipient-credit account state. No seed phrase or private key reaches the browser.</p></div>
@@ -211,7 +211,7 @@
 
     <div class="modal-backdrop" id="receiptVerifierModal" aria-hidden="true">
       <div class="modal receipt-verifier" role="dialog" aria-modal="true" aria-labelledby="verifierTitle">
-        <div class="modal-head"><span>PUBLIC RECEIPT VERIFIER / R1.4.4</span><button class="modal-close" type="button" data-verifier-close aria-label="Close">×</button></div>
+        <div class="modal-head"><span>PUBLIC RECEIPT VERIFIER / R1.4.5</span><button class="modal-close" type="button" data-verifier-close aria-label="Close">×</button></div>
         <div class="verifier-body">
           <section class="verifier-intro">
             <div><span class="status-pill"><i></i> LOCAL HASH + RIALO PROOF</span><h3 id="verifierTitle">Prove a recovery receipt has not been altered.</h3><p>The JSON file is parsed and hashed locally in your browser. Only the receipt's public anchor evidence is sent to the read-only Rialo verification endpoint.</p></div>
@@ -240,6 +240,6 @@
 
     <div class="toast" id="toast" role="status" aria-live="polite"><strong id="toastTitle">CONSOLE READY</strong><span id="toastText">All controls are active.</span></div>
   </div>
-  <script type="module" src="/src/app.js?v=r1.4.4"></script>
+  <script type="module" src="/src/app.js?v=r1.4.5"></script>
 </body>
 </html>

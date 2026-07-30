@@ -18,4 +18,4 @@ The exported receipt is parsed and hashed in the browser. The full file is not u
 
 ## Reporting plane
 
-R1.4.4 can copy a human-readable verification summary or download `rialo-rewind.verification-report.v1`. Reports contain public proof metadata and explicitly state that the full receipt was not uploaded.
+R1.4.5 can copy a human-readable verification summary or download `rialo-rewind.verification-report.v1`. Reports contain public proof metadata and explicitly state that the full receipt was not uploaded.

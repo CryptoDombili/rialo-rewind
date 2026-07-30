@@ -1,6 +1,12 @@
+## R1.4.5 — Animated signal sky and step-04 spacing fix
+
+- moved the 503 diagnostic left so it no longer collides with the C1 refund card on 1080p displays
+- kept the tracer aligned to step 04 Create Shipment
+- made the ambient starfield visibly animate while staying subtle and theme-consistent
+
 # Changelog
 
-## R1.4.4 — Signal sky and collision-free diagnostics
+## R1.4.5 — Signal sky and collision-free diagnostics
 
 - Rebuilt the ambient starfield as a denser, irregular Rialo telemetry sky.
 - Moved the 503 failure gate into the empty channel between compensation nodes.
