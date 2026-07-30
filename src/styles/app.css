@@ -661,7 +661,7 @@ body { font-size: 16px; }
 @media (max-width: 1450px) { .receipt-actions { grid-template-columns: 1fr; } .receipt-actions button + button { border-left: 0; border-top: 1px solid var(--line); } }
 
 
-/* PUBLIC RECEIPT VERIFIER — R1.4 */
+/* PUBLIC RECEIPT VERIFIER — R1.4.1 */
 .verifier-summary-card .summary-head strong { color: var(--muted); font: 800 9px/1 var(--mono); }
 .verifier-summary-card .summary-head strong[data-tone="valid"] { color: var(--acid); }
 .verifier-summary-card .summary-head strong[data-tone="tampered"],
@@ -726,7 +726,7 @@ body { font-size: 16px; }
 }
 
 
-/* R1.4 final product polish */
+/* R1.4.1 final product polish */
 .verifier-actions button { min-width: 0; padding-inline: 10px; white-space: nowrap; }
 .verifier-actions #verifierCopyButton:not(:disabled),
 .verifier-actions #verifierDownloadButton:not(:disabled) { color: var(--cyan); }

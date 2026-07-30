@@ -225,7 +225,7 @@ export function initReceiptVerifier({ showToast = () => {} } = {}) {
       execution.textContent = shortVerifierValue(receipt.executionId, 8);
       setStep("json", "complete", "PARSED");
       setStep("hash", "running", "REHASHING");
-      integrity = await verifyReceiptIntegrity(receipt);
+      const integrity = await verifyReceiptIntegrity(receipt);
       suppliedHash.textContent = shortVerifierValue(integrity.suppliedHash, 12);
       computedHash.textContent = shortVerifierValue(integrity.computedHash, 12);
       setStep("hash", "failed", "MISMATCH");
