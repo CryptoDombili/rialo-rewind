@@ -638,3 +638,13 @@ body { font-size: 16px; }
   .node-title { font-size: 18px; }
   .inspector-hero h2 { font-size: 38px; }
 }
+
+/* R1.0 server execution receipt */
+.receipt-grid strong#receiptHash,
+.summary-list strong#proofReceiptHash {
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.app[data-flow="running"] .control-button:disabled { opacity: .72; }

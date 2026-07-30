@@ -1,46 +1,27 @@
-# Rialo Rewind
+# Rialo Rewind R1.0
 
-Native compensation and recovery for real-world workflows on Rialo.
+Native compensation and recovery engine for real-world workflows on Rialo.
 
-Rialo Rewind demonstrates how a multi-step workflow can stop after a downstream failure, retry safely, and execute compensating actions in reverse order. The R0.11 console combines a deterministic recovery engine with live Rialo devnet telemetry and a real signed devnet transfer.
+R1.0 connects the interface to a real server-side state machine. The clean and controlled-failure flows are executed inside `/api/workflow`; the browser only replays the events returned by that execution.
 
-## What is real in R0.11
+## What is real
 
-- Live Rialo devnet block-height check through the official `@rialo/ts-cdk` client.
-- A disposable server-side Rialo keypair generated for each proof run.
-- A devnet faucet request followed by a signed 0.001 RLO system transfer.
-- A real base58 transaction signature.
-- Transaction-index verification through `getTransaction` and sender history.
-- Account-state verification through the sender debit and the unique recipient credit when the devnet transaction index lags.
-- Deterministic forward and compensation execution state machine.
-- Retry ceiling, idempotent recovery policy, event stream, inspector, and portable receipt.
+- Rialo devnet telemetry and signed transaction proof
+- Server-side forward workflow execution
+- Three-attempt courier failure boundary
+- Reverse compensation in `refund → cancel → release` order
+- Workflow-scoped idempotency keys
+- Before/after business state
+- Portable receipt v2 with SHA-256 integrity hash
+- Vercel API security checks and rate limiting
 
-## Honest verification states
+## Honest boundary
 
-- `CONFIRMED`: Rialo's transaction index or sender history exposes the submitted signature.
-- `STATE VERIFIED`: the disposable recipient received the transfer and the sender was debited, while transaction indexing is still delayed.
-- `SUBMITTED`: a signature was returned but neither verification path is visible yet.
+The workflow adapters are server-side sandbox business systems, not third-party production merchant/courier APIs. The receipt is integrity-hashed but is not yet anchored to a dedicated Rialo receipt registry program. That is the next milestone.
 
-The UI never labels a merely submitted transaction as confirmed.
-
-## Security boundary
-
-The signed-proof function uses disposable devnet-only keypairs. They exist in memory for one request, are disposed in `finally`, and are never returned to the browser. No seed phrase or private key is stored.
-
-The recovery flow itself remains a deterministic product engine in R0.11. The next milestone is a dedicated Rialo recovery registry/program that anchors workflow receipts and compensation state onchain.
-
-## Local checks
+## Commands
 
 ```bash
 npm test
 npm run check
 ```
-
-Live RPC and signed proof require a Vercel deployment.
-
-## R0.11 verification upgrade
-
-- Keeps the base58 signature fix from v0.8.
-- Checks `getTransaction` and `getSignaturesForAddress` for index-level confirmation.
-- Falls back to sender and recipient account-state evidence instead of leaving an executed transfer stuck on `SUBMITTED`.
-- Labels the fallback precisely as `STATE VERIFIED`, not transaction-index confirmation.

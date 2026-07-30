@@ -30,6 +30,9 @@
     },
     "api/verify.js": {
       "maxDuration": 20
+    },
+    "api/workflow.js": {
+      "maxDuration": 20
     }
   }
 }

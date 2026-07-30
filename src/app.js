@@ -1,6 +1,7 @@
 import { initDevnetPanel } from "./rialo/devnet-panel.js";
 import { initSignedProof } from "./rialo/signed-proof.js";
-import { createWorkflowReceipt, serializeReceipt } from "./core/receipt.js";
+import { serializeReceipt } from "./core/receipt.js";
+import { executeServerWorkflow } from "./core/workflow-client.js";
 
 (() => {
       "use strict";
@@ -31,7 +32,7 @@ import { createWorkflowReceipt, serializeReceipt } from "./core/receipt.js";
       };
       const receipt = {
         badge: $("#receiptBadge"), result: $("#receiptResult"), failed: $("#receiptFailed"),
-        retries: $("#receiptRetries"), refund: $("#receiptRefund")
+        retries: $("#receiptRetries"), refund: $("#receiptRefund"), engine: $("#receiptEngine"), hash: $("#receiptHash")
       };
 
       const data = {
@@ -138,26 +139,35 @@ import { createWorkflowReceipt, serializeReceipt } from "./core/receipt.js";
         receipt.failed.textContent = "—";
         receipt.retries.textContent = "0";
         receipt.refund.textContent = "0.00 RLO";
+        receipt.engine.textContent = "—";
+        receipt.hash.textContent = "—";
         receiptButton.disabled = true;
         $("#proofStatus").textContent = "WAITING";
         $("#proofTitle").textContent = "No receipt issued";
         $("#proofText").textContent = "Run a clean flow or inject a failure. The console will produce a portable execution receipt.";
         $("#proofManual").textContent = "—";
+        $("#proofEngine").textContent = "—";
+        $("#proofReceiptHash").textContent = "—";
       }
 
-      function issueReceipt(result, failed, retries, refund) {
+      function issueReceipt(serverReceipt) {
+        const result = serverReceipt.result;
         receipt.badge.textContent = "ISSUED";
         receipt.result.textContent = result;
         receipt.result.style.color = result === "COMPENSATED" ? "var(--acid)" : "var(--cyan)";
-        receipt.failed.textContent = failed;
-        receipt.retries.textContent = retries;
-        receipt.refund.textContent = refund;
-        lastReceipt = { workflowId: "RW-0247", result, failedStep: failed, retries: Number(retries), refund, manualIntervention: "NOT REQUIRED" };
+        receipt.failed.textContent = serverReceipt.failedStep;
+        receipt.retries.textContent = String(serverReceipt.retries);
+        receipt.refund.textContent = serverReceipt.refund;
+        receipt.engine.textContent = "SERVER R1.0";
+        receipt.hash.textContent = `${serverReceipt.receiptHash.slice(0, 12)}…`;
+        lastReceipt = serverReceipt;
         receiptButton.disabled = false;
         $("#proofStatus").textContent = "ISSUED";
         $("#proofTitle").textContent = result === "COMPENSATED" ? "Recovery receipt ready" : "Settlement receipt ready";
-        $("#proofText").textContent = result === "COMPENSATED" ? "Three compensating actions restored the business state and returned the protected balance." : "All five forward steps completed and the compensation stack was discarded.";
-        $("#proofManual").textContent = "NOT REQUIRED";
+        $("#proofText").textContent = result === "COMPENSATED" ? "The server state machine retried the courier boundary and executed three idempotent compensations." : "The server state machine completed all five forward actions and discarded the compensation stack.";
+        $("#proofManual").textContent = serverReceipt.manualIntervention;
+        $("#proofEngine").textContent = "SERVER R1.0";
+        $("#proofReceiptHash").textContent = `${serverReceipt.receiptHash.slice(0, 12)}…`;
       }
 
       function resetUI({ keepLogs = false, notify = false } = {}) {
@@ -223,134 +233,152 @@ import { createWorkflowReceipt, serializeReceipt } from "./core/receipt.js";
         log(source, done, "success");
       }
 
-      async function cleanFlow() {
-        resetUI();
-        const token = ++runToken;
-        lockControls(true);
-        app.dataset.flow = "running";
-        engineState.textContent = "EXECUTING";
-        modeState.textContent = "FORWARD";
-        forwardCaption.textContent = "LIVE EXECUTION";
-        log("WORKFLOW", "RW-0247 forward execution started.");
-        try {
-          await runForward(token, "reserve", 0, "INVENTORY", "Requesting reservation for SKU-RL/01.", "Inventory reservation confirmed.");
-          await runForward(token, "escrow", 1, "ESCROW", "Locking 50.00 RLO in protected escrow.", "Escrow lock confirmed.");
-          await runForward(token, "merchant", 2, "MERCHANT", "Creating idempotent merchant order.", "Order ORD-0247 created.");
-          await runForward(token, "courier", 3, "COURIER", "Requesting verified courier label.", "Shipment SHP-0247 created.", 820);
-          await runForward(token, "settle", 4, "SETTLEMENT", "Releasing escrow to merchant.", "50.00 RLO settlement confirmed.", 780);
-          if (token !== runToken) return;
-          forwardPacket.classList.remove("is-live");
-          app.dataset.flow = "complete";
-          engineState.textContent = "COMPLETE";
-          modeState.textContent = "SETTLED";
-          forwardCaption.textContent = "WORKFLOW SETTLED";
-          reverseCaption.textContent = "COMPENSATION DISCARDED";
-          log("WORKFLOW", "Execution completed. Recovery stack safely discarded.", "success");
-          issueReceipt("SETTLED", "NONE", "0", "0.00 RLO");
-          $("#resultTitle").textContent = "SETTLED";
-          $("#resultText").textContent = "All five forward actions completed. No recovery action was required.";
-          $("#resultRefund").textContent = "0.00 RLO";
-          $("#resultRetries").textContent = "0";
-          $("#resultActions").textContent = "0";
-          resultBanner.classList.add("is-visible");
-          showToast("FLOW SETTLED", "All five steps completed successfully.");
-        } catch (error) {
-          if (error.message !== "cancelled") console.error(error);
-        } finally {
-          if (token === runToken) lockControls(false);
-        }
+      function serverEventLabel(event) {
+        const labels = {
+          reserve: ["INVENTORY", "Inventory reservation"],
+          escrow: ["ESCROW", "Protected escrow lock"],
+          merchant: ["MERCHANT", "Merchant order"],
+          courier: ["COURIER", "Courier shipment"],
+          settle: ["SETTLEMENT", "Merchant settlement"],
+          refund: ["ESCROW", "Customer refund"],
+          cancel: ["MERCHANT", "Order cancellation"],
+          release: ["INVENTORY", "Inventory release"],
+        };
+        return labels[event.name] || [event.source || "ENGINE", event.name || "Workflow action"];
       }
 
-      async function failureFlow() {
-        resetUI();
-        const token = ++runToken;
-        lockControls(true);
-        app.dataset.flow = "running";
-        engineState.textContent = "EXECUTING";
-        modeState.textContent = "FORWARD";
-        forwardCaption.textContent = "FAILURE INJECTION ARMED";
-        log("WORKFLOW", "RW-0247 started with controlled failure injection.");
-        try {
-          await runForward(token, "reserve", 0, "INVENTORY", "Requesting reservation for SKU-RL/01.", "Inventory reservation confirmed.");
-          await runForward(token, "escrow", 1, "ESCROW", "Locking 50.00 RLO in protected escrow.", "Escrow lock confirmed.");
-          await runForward(token, "merchant", 2, "MERCHANT", "Creating idempotent merchant order.", "Order ORD-0247 created.");
+      async function replayServerExecution(payload, token) {
+        const events = payload.execution.events;
+        let previousOffset = 0;
+        for (const event of events) {
+          if (token !== runToken) throw new Error("cancelled");
+          const delta = Math.max(0, Number(event.offsetMs || 0) - previousOffset);
+          previousOffset = Number(event.offsetMs || previousOffset);
+          if (delta > 0) await sleep(Math.max(120, Math.min(360, delta * 2)));
 
-          selectNode("courier");
-          forwardPacket.classList.add("is-live");
-          forwardPacket.style.left = "73%";
-          for (let attempt = 1; attempt <= 3; attempt += 1) {
-            if (token !== runToken) return;
-            setNode("courier", "is-running", `TRY ${attempt}/3`);
-            data.courier.retries = `${attempt - 1} / 3`;
-            faultAttempt.textContent = `ATTEMPT ${attempt} / 3`;
-            updateInspector("courier");
-            log("COURIER", `Shipment request attempt ${attempt}/3.`);
+          const [source, label] = serverEventLabel(event);
+          if (event.type === "workflow.started") {
+            log("SERVER", `Execution ${event.executionId.slice(0, 8)} accepted by the R1.0 state machine.`);
+          } else if (event.type === "action.started") {
+            selectNode(event.name);
+            setNode(event.name, "is-running", event.attempt ? `TRY ${event.attempt}/3` : (event.compensation ? "REVERSING" : "RUNNING"));
+            data[event.name].trace = event.traceId || "—";
+            if (event.name === "courier" && event.attempt) {
+              data.courier.retries = `${event.attempt - 1} / 3`;
+              faultAttempt.textContent = `ATTEMPT ${event.attempt} / 3`;
+            }
+            if (event.compensation) {
+              reversePacket.classList.add("is-live");
+              const index = reverseOrder.indexOf(event.name);
+              reversePacket.style.right = `${reversePositions[index]}%`;
+            } else {
+              forwardPacket.classList.add("is-live");
+              const index = forwardOrder.indexOf(event.name);
+              forwardPacket.style.left = `${forwardPositions[index]}%`;
+            }
+            updateInspector(event.name);
+            log(source, `${label} started on the server.`);
+          } else if (event.type === "action.completed") {
+            setNode(event.name, "is-complete", "COMPLETE");
+            data[event.name].trace = event.traceId || data[event.name].trace;
+            if (event.compensation) {
+              const index = reverseOrder.indexOf(event.name);
+              reverseFill.style.width = `${reversePositions[index]}%`;
+            } else {
+              const index = forwardOrder.indexOf(event.name);
+              forwardFill.style.width = `${forwardPositions[index]}%`;
+            }
+            updateInspector(event.name);
+            log(source, `${label} committed by the server engine.`, "success");
+          } else if (event.type === "action.failed") {
+            selectNode(event.name);
+            setNode(event.name, "is-failed", event.attempt === event.maxAttempts ? "FAILED" : `RETRY ${event.attempt}/3`);
+            data.courier.retries = `${event.attempt} / 3`;
+            data.courier.trace = event.traceId;
+            updateInspector(event.name);
+            log(source, `${event.error.code} — server attempt ${event.attempt}/${event.maxAttempts} failed.`, "error");
+          } else if (event.type === "retry.scheduled") {
+            log("ENGINE", `Retry ${event.attempt}/3 scheduled by policy.`);
+          } else if (event.type === "workflow.halted") {
+            forwardPacket.classList.remove("is-live");
+            app.dataset.flow = "failed";
+            forwardFill.style.width = "73%";
+            setNode("settle", "is-blocked", "BLOCKED");
+            engineState.textContent = "FAULT";
+            modeState.textContent = "HALTED";
+            forwardCaption.textContent = "SERVER HALTED FORWARD PATH";
+            reverseCaption.textContent = "OPENING COMPENSATION STACK";
+            phaseFlash.classList.add("is-visible");
+            log("ENGINE", event.reason, "error");
             await sleep(720);
-            if (token !== runToken) return;
-            setNode("courier", "is-failed", attempt === 3 ? "FAILED" : `RETRY ${attempt}/3`);
-            data.courier.retries = `${attempt} / 3`;
-            data.courier.trace = `http_503_attempt_${attempt}`;
-            updateInspector("courier");
-            log("COURIER", `HTTP 503 — attempt ${attempt}/3 failed.`, "error");
-            if (attempt < 3) await sleep(560);
+            phaseFlash.classList.remove("is-visible");
+          } else if (event.type === "compensation.started") {
+            app.dataset.flow = "compensating";
+            engineState.textContent = "RECOVERING";
+            modeState.textContent = "REWIND";
+            reverseCaption.textContent = "SERVER COMPENSATION LIVE";
+            log("ENGINE", `Server compensation plan: ${event.plan.join(" → ")}.`, "error");
+          } else if (event.type === "workflow.completed") {
+            forwardPacket.classList.remove("is-live");
+            reversePacket.classList.remove("is-live");
+            const compensated = event.result === "COMPENSATED";
+            app.dataset.flow = compensated ? "recovered" : "complete";
+            engineState.textContent = compensated ? "SAFE" : "COMPLETE";
+            modeState.textContent = compensated ? "RECOVERED" : "SETTLED";
+            forwardCaption.textContent = compensated ? "FORWARD PATH COMPENSATED" : "SERVER WORKFLOW SETTLED";
+            reverseCaption.textContent = compensated ? "BUSINESS STATE RESTORED" : "COMPENSATION DISCARDED";
+            log("SERVER", compensated ? "Recovery state committed. No manual intervention required." : "Settlement state committed. Compensation stack discarded.", "success");
           }
+        }
+      }
 
-          forwardPacket.classList.remove("is-live");
-          app.dataset.flow = "failed";
-          forwardFill.style.width = "73%";
-          setNode("settle", "is-blocked", "BLOCKED");
-          engineState.textContent = "FAULT";
-          modeState.textContent = "HALTED";
-          forwardCaption.textContent = "FORWARD PATH INTERRUPTED";
-          reverseCaption.textContent = "OPENING COMPENSATION STACK";
-          log("ENGINE", "Retry ceiling reached. Forward settlement blocked.", "error");
-          phaseFlash.classList.add("is-visible");
-          await sleep(1150);
-          phaseFlash.classList.remove("is-visible");
-
-          app.dataset.flow = "compensating";
-          engineState.textContent = "RECOVERING";
-          modeState.textContent = "REWIND";
-          reverseCaption.textContent = "REVERSE EXECUTION LIVE";
-          log("ENGINE", "Compensation sequence started in reverse order.", "error");
-
-          await runCompensation(token, "refund", 0, "ESCROW", "Submitting protected refund.", "50.00 RLO returned to customer.", 880);
-          await runCompensation(token, "cancel", 1, "MERCHANT", "Cancelling order ORD-0247.", "Merchant order cancelled.");
-          await runCompensation(token, "release", 2, "INVENTORY", "Releasing SKU-RL/01 reservation.", "Inventory returned to available stock.");
-
+      async function runServerFlow(mode) {
+        resetUI();
+        const token = ++runToken;
+        lockControls(true);
+        app.dataset.flow = "running";
+        engineState.textContent = "SERVER";
+        modeState.textContent = mode === "failure" ? "FAULT TEST" : "CLEAN RUN";
+        forwardCaption.textContent = "WAITING FOR SERVER EXECUTION";
+        log("CLIENT", `Submitting ${mode} workflow to /api/workflow.`);
+        try {
+          const payload = await executeServerWorkflow(mode);
           if (token !== runToken) return;
-          reversePacket.classList.remove("is-live");
-          app.dataset.flow = "recovered";
-          engineState.textContent = "SAFE";
-          modeState.textContent = "RECOVERED";
-          reverseCaption.textContent = "BUSINESS STATE RESTORED";
-          log("WORKFLOW", "Recovery complete. No manual intervention required.", "success");
-          issueReceipt("COMPENSATED", "CREATE SHIPMENT", "3", "50.00 RLO");
-          $("#resultTitle").textContent = "RECOVERED";
-          $("#resultText").textContent = "Business state restored without manual intervention.";
-          $("#resultRefund").textContent = "50.00 RLO";
-          $("#resultRetries").textContent = "3";
-          $("#resultActions").textContent = "3";
+          startedAt = performance.now();
+          log("SERVER", `Execution receipt returned in ${payload.execution.durationMs} ms. Replaying verified events.`);
+          await replayServerExecution(payload, token);
+          if (token !== runToken) return;
+          issueReceipt(payload.receipt);
+          const compensated = payload.execution.result === "COMPENSATED";
+          $("#resultTitle").textContent = compensated ? "RECOVERED" : "SETTLED";
+          $("#resultText").textContent = compensated ? "Server state restored through three idempotent compensations." : "Server state completed all five forward actions.";
+          $("#resultRefund").textContent = payload.receipt.refund;
+          $("#resultRetries").textContent = String(payload.receipt.retries);
+          $("#resultActions").textContent = compensated ? "3" : "0";
           resultBanner.classList.add("is-visible");
-          selectNode("release");
-          showToast("RECOVERY COMPLETE", "50.00 RLO returned and external state reversed.");
+          if (compensated) selectNode("release");
+          showToast(compensated ? "SERVER RECOVERY COMPLETE" : "SERVER FLOW SETTLED", `${payload.receipt.receiptHash.slice(0, 12)}… receipt issued.`);
         } catch (error) {
-          if (error.message !== "cancelled") console.error(error);
+          if (error.message !== "cancelled") {
+            console.error(error);
+            app.dataset.flow = "idle";
+            engineState.textContent = "ERROR";
+            modeState.textContent = "RETRY";
+            forwardCaption.textContent = "SERVER EXECUTION FAILED";
+            log("SERVER", error.message, "error");
+            showToast("WORKFLOW ERROR", error.message);
+          }
         } finally {
           if (token === runToken) lockControls(false);
         }
       }
+
+      async function cleanFlow() { return runServerFlow("clean"); }
+      async function failureFlow() { return runServerFlow("failure"); }
 
       function exportReceipt() {
         if (!lastReceipt) { showToast("NO RECEIPT", "Run a workflow before exporting."); return; }
-        const payload = createWorkflowReceipt({
-          result: lastReceipt.result,
-          failedStep: lastReceipt.failedStep,
-          retries: lastReceipt.retries,
-          refund: lastReceipt.refund,
-          traces: Object.values(data).map((item) => item.trace).filter((trace) => trace && trace !== "—"),
-        });
-        const blob = new Blob([serializeReceipt(payload)], { type: "application/json" });
+        const blob = new Blob([serializeReceipt(lastReceipt)], { type: "application/json" });
         const url = URL.createObjectURL(blob);
         const link = document.createElement("a");
         link.href = url;
