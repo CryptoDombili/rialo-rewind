@@ -175,7 +175,7 @@ import { initReceiptVerifier } from "./receipt-verifier.js";
         receipt.failed.textContent = serverReceipt.failedStep;
         receipt.retries.textContent = String(serverReceipt.retries);
         receipt.refund.textContent = serverReceipt.refund;
-        receipt.engine.textContent = "SERVER R1.2.2";
+        receipt.engine.textContent = "SERVER R1.3";
         receipt.hash.textContent = `${serverReceipt.receiptHash.slice(0, 12)}…`;
         lastReceipt = serverReceipt;
         anchorButton.disabled = false;
@@ -184,7 +184,7 @@ import { initReceiptVerifier } from "./receipt-verifier.js";
         $("#proofTitle").textContent = result === "COMPENSATED" ? "Recovery receipt ready" : "Settlement receipt ready";
         $("#proofText").textContent = result === "COMPENSATED" ? "The server state machine retried the courier boundary and executed three idempotent compensations." : "The server state machine completed all five forward actions and discarded the compensation stack.";
         $("#proofManual").textContent = serverReceipt.manualIntervention;
-        $("#proofEngine").textContent = "SERVER R1.2.2";
+        $("#proofEngine").textContent = "SERVER R1.3";
         $("#proofReceiptHash").textContent = `${serverReceipt.receiptHash.slice(0, 12)}…`;
       }
 
@@ -276,7 +276,7 @@ import { initReceiptVerifier } from "./receipt-verifier.js";
 
           const [source, label] = serverEventLabel(event);
           if (event.type === "workflow.started") {
-            log("SERVER", `Execution ${event.executionId.slice(0, 8)} accepted by the R1.2.2 state machine.`);
+            log("SERVER", `Execution ${event.executionId.slice(0, 8)} accepted by the R1.3 state machine.`);
           } else if (event.type === "action.started") {
             selectNode(event.name);
             setNode(event.name, "is-running", event.attempt ? `TRY ${event.attempt}/3` : (event.compensation ? "REVERSING" : "RUNNING"));

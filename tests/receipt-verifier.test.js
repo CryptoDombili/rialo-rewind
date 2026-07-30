@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import {
   classifyReceiptVerification,
+  createTamperedReceiptCopy,
   verifyAnchorBinding,
   verifyReceiptIntegrity,
 } from "../src/core/receipt-verifier-model.js";
@@ -9,7 +10,7 @@ import {
 function baseReceipt() {
   return {
     schema: "rialo-rewind.receipt.v2",
-    engineVersion: "r1.2",
+    engineVersion: "r1.3",
     engine: "vercel-server-state-machine",
     workflowId: "RW-0247",
     executionId: "test-execution",
@@ -63,4 +64,21 @@ test("classification distinguishes valid, pending and tampered receipts", () => 
   assert.equal(classifyReceiptVerification({ integrity: { ok: true }, binding: { ok: true }, chain: { status: "confirmed" } }), "VALID");
   assert.equal(classifyReceiptVerification({ integrity: { ok: true }, binding: { ok: true }, chain: { status: "submitted" } }), "PENDING");
   assert.equal(classifyReceiptVerification({ integrity: { ok: false }, binding: { ok: true }, chain: { status: "confirmed" } }), "TAMPERED");
+});
+
+
+test("tamper challenge changes a protected field without mutating the source", async () => {
+  const receipt = await signedReceipt();
+  receipt.onchainAnchor = {
+    receiptHash: receipt.receiptHash,
+    commitmentAddress: "E4egR9UQn2vBJTnXZDPR18PbZrv3XK6yqgJpqxZXj6mY",
+    signature: "S7bgUcKHgptFuaPPTj4x2jpGWPoUz3dTDXYVA9BDmZfCvaqMsT5UaY4NYMGLCvSac9Dfb3f8idwejTXBtMRizSq",
+  };
+  const originalRefund = receipt.refund;
+  const challenge = createTamperedReceiptCopy(receipt);
+  assert.equal(receipt.refund, originalRefund);
+  assert.notEqual(challenge.receipt.refund, originalRefund);
+  assert.equal(challenge.receipt.receiptHash, receipt.receiptHash);
+  assert.equal(challenge.receipt.onchainAnchor.signature, receipt.onchainAnchor.signature);
+  assert.equal((await verifyReceiptIntegrity(challenge.receipt)).ok, false);
 });

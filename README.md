@@ -1,8 +1,8 @@
-# Rialo Rewind R1.2.2
+# Rialo Rewind R1.3
 
 Native compensation and recovery engine for real-world workflows on Rialo.
 
-R1.2.2 combines the server-side recovery state machine, Rialo receipt anchoring, and public receipt verification. The clean and controlled-failure flows are executed inside `/api/workflow`; the browser only replays the events returned by that execution.
+R1.3 combines the server-side recovery state machine, Rialo receipt anchoring, and public receipt verification. The clean and controlled-failure flows are executed inside `/api/workflow`; the browser only replays the events returned by that execution.
 
 ## What is real
 
@@ -50,3 +50,13 @@ Possible results are `VALID`, `TAMPERED`, `PENDING`, `UNVERIFIED`, or `INVALID`.
 ## R1.2.2 verifier controls fix
 
 R1.2.2 restores the Rialo anchor DOM fields required by the recovery console, initializes the verifier before the main console reset, and makes the verifier controls independently resilient. This prevents a missing optional panel field from disabling Load, Close, Reset, or drag-and-drop.
+
+
+## R1.3 tamper challenge
+
+R1.3 adds a deterministic negative verification path. After a receipt has been verified as `VALID`, the verifier enables **RUN TAMPER TEST**. The browser clones the verified receipt in memory, changes one protected business field while preserving the original `receiptHash` and Rialo anchor evidence, and runs the same verifier again. The expected result is `TAMPERED`; Rialo is not queried after the local SHA-256 mismatch.
+
+This proves both sides of the trust model:
+
+- unchanged receipt → `VALID`,
+- altered receipt → `TAMPERED`.

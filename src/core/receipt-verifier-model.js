@@ -66,6 +66,22 @@ export function classifyReceiptVerification({ integrity, binding, chain }) {
   return "UNVERIFIED";
 }
 
+
+export function createTamperedReceiptCopy(receipt) {
+  assertReceiptShape(receipt);
+  const clone = JSON.parse(JSON.stringify(receipt));
+  const originalRefund = String(clone.refund || "");
+  clone.refund = originalRefund === "49.99 RLO" ? "50.01 RLO" : "49.99 RLO";
+  return Object.freeze({
+    receipt: clone,
+    mutation: Object.freeze({
+      field: "refund",
+      before: originalRefund || "missing",
+      after: clone.refund,
+    }),
+  });
+}
+
 export function shortVerifierValue(value, size = 12) {
   const text = String(value || "");
   if (!text) return "—";

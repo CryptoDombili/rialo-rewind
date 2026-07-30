@@ -2,6 +2,7 @@ import {
   MAX_RECEIPT_BYTES,
   assertReceiptShape,
   classifyReceiptVerification,
+  createTamperedReceiptCopy,
   shortVerifierValue,
   verifyAnchorBinding,
   verifyReceiptIntegrity,
@@ -16,6 +17,7 @@ export function initReceiptVerifier({ showToast = () => {} } = {}) {
   const dropzone = modal.querySelector("#verifierDropzone");
   const loadButton = modal.querySelector("#verifierLoadButton");
   const resetButton = modal.querySelector("#verifierResetButton");
+  const tamperButton = modal.querySelector("#verifierTamperButton");
   const closeButtons = modal.querySelectorAll("[data-verifier-close]");
   const result = modal.querySelector("#verifierResult");
   const badge = modal.querySelector("#verifierBadge");
@@ -40,11 +42,13 @@ export function initReceiptVerifier({ showToast = () => {} } = {}) {
     chain: modal.querySelector('[data-verifier-step="chain"]'),
   };
 
-  const required = { fileInput, dropzone, loadButton, resetButton, result, badge, headline, description, fileName, suppliedHash, computedHash, commitment, signature, block, mode, workflow, execution, ...steps };
+  const required = { fileInput, dropzone, loadButton, resetButton, tamperButton, result, badge, headline, description, fileName, suppliedHash, computedHash, commitment, signature, block, mode, workflow, execution, ...steps };
   const missing = Object.entries(required).filter(([, element]) => !element).map(([name]) => name);
   if (missing.length) throw new Error(`Receipt verifier DOM is incomplete: ${missing.join(", ")}`);
 
   let busy = false;
+  let verifiedReceipt = null;
+  let verifiedFileName = "";
 
   function setStep(name, state, label) {
     const element = steps[name];
@@ -71,6 +75,9 @@ export function initReceiptVerifier({ showToast = () => {} } = {}) {
     Object.keys(steps).forEach((name) => setStep(name, "idle", "WAITING"));
     loadButton.disabled = false;
     resetButton.disabled = false;
+    tamperButton.disabled = true;
+    verifiedReceipt = null;
+    verifiedFileName = "";
   }
 
   function open() {
@@ -160,7 +167,10 @@ export function initReceiptVerifier({ showToast = () => {} } = {}) {
       const classification = classifyReceiptVerification({ integrity, binding, chain });
       if (classification === "VALID") {
         setStep("chain", "complete", "CONFIRMED");
-        setFinal("VALID", "Receipt and Rialo anchor are valid.", "The workflow hash recomputes locally and its commitment is confirmed on Rialo devnet.");
+        setFinal("VALID", "Receipt and Rialo anchor are valid.", "The workflow hash recomputes locally and its commitment is confirmed on Rialo devnet. Run the tamper test to prove altered data is rejected.");
+        verifiedReceipt = receipt;
+        verifiedFileName = file.name;
+        tamperButton.disabled = false;
         showToast("VALID RECEIPT", `${receipt.workflowId} is cryptographically intact and anchored.`);
       } else if (classification === "PENDING") {
         setStep("chain", "running", "SUBMITTED");
@@ -185,10 +195,48 @@ export function initReceiptVerifier({ showToast = () => {} } = {}) {
     }
   }
 
+  async function runTamperTest() {
+    if (busy || !verifiedReceipt) return;
+    busy = true;
+    loadButton.disabled = true;
+    resetButton.disabled = true;
+    tamperButton.disabled = true;
+    try {
+      const challenge = createTamperedReceiptCopy(verifiedReceipt);
+      const receipt = challenge.receipt;
+      fileName.textContent = `${verifiedFileName || "verified-receipt.json"} · simulated edit`;
+      workflow.textContent = receipt.workflowId;
+      execution.textContent = shortVerifierValue(receipt.executionId, 8);
+      setStep("json", "complete", "PARSED");
+      setStep("hash", "running", "REHASHING");
+      const integrity = await verifyReceiptIntegrity(receipt);
+      suppliedHash.textContent = shortVerifierValue(integrity.suppliedHash, 12);
+      computedHash.textContent = shortVerifierValue(integrity.computedHash, 12);
+      setStep("hash", "failed", "MISMATCH");
+      setStep("binding", "blocked", "BLOCKED");
+      setStep("chain", "blocked", "NOT QUERIED");
+      commitment.textContent = shortVerifierValue(receipt.onchainAnchor?.commitmentAddress, 12);
+      signature.textContent = shortVerifierValue(receipt.onchainAnchor?.signature, 12);
+      block.textContent = receipt.onchainAnchor?.blockHeight || "—";
+      mode.textContent = "local-tamper-challenge";
+      setFinal("TAMPERED", "Altered receipt rejected before any chain query.", `Protected field ${challenge.mutation.field} changed from ${challenge.mutation.before} to ${challenge.mutation.after}. The original receipt hash and Rialo anchor no longer match the payload.`);
+      showToast("TAMPER TEST PASSED", "The simulated edit was detected locally and Rialo was not queried.");
+    } catch (error) {
+      console.error(error);
+      setFinal("INVALID", "Tamper challenge could not run.", error.message);
+      showToast("TAMPER TEST ERROR", error.message);
+    } finally {
+      busy = false;
+      loadButton.disabled = false;
+      resetButton.disabled = false;
+    }
+  }
+
   document.querySelectorAll('[data-action="receipt-verifier"]').forEach((button) => button.addEventListener("click", open));
   closeButtons.forEach((button) => button.addEventListener("click", close));
   loadButton.addEventListener("click", () => fileInput.click());
   resetButton.addEventListener("click", reset);
+  tamperButton.addEventListener("click", runTamperTest);
   fileInput.addEventListener("change", () => verifyFile(fileInput.files?.[0]));
   dropzone.addEventListener("click", () => fileInput.click());
   dropzone.addEventListener("keydown", (event) => {

@@ -1,6 +1,6 @@
 import { createHash, randomUUID } from "node:crypto";
 
-export const ENGINE_VERSION = "r1.2";
+export const ENGINE_VERSION = "r1.3";
 export const WORKFLOW_ID = "RW-0247";
 export const ESCROW_AMOUNT_RLO = 50;
 
