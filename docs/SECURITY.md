@@ -1,15 +1,22 @@
-# Security
+# Security Model
 
-- Never paste a seed phrase or private key into Rialo Rewind.
-- Public account lookup is read-only.
-- The signed proof creates disposable devnet-only keypairs inside one serverless request.
-- Private key material is not logged, persisted, or returned to the browser.
-- Both keypairs are disposed in a `finally` block.
-- The proof endpoint accepts one fixed intent and no transaction parameters from the user.
-- Amounts are hard-coded to 0.05 RLO faucet funding and a 0.001 RLO transfer.
-- The existing RPC proxy uses an allowlist of read-only methods.
+## Protected properties
 
+- Receipt integrity is checked with SHA-256 in the browser.
+- Receipt-to-anchor binding is recomputed from the receipt hash.
+- Altered receipts are rejected before Rialo is queried.
+- Workflow actions use execution-scoped idempotency keys.
+- API routes require same-origin requests and version headers.
+- Responses use `no-store` and `nosniff`; expensive write paths are rate-limited.
+- Signed-proof and anchor keys are disposable devnet-only keys and are disposed server-side.
 
-## Receipt anchor limitations
+## Privacy
 
-The R1.1 anchor-protocol commitment address is deterministically derived from public receipt data. It is not a custody address and must never hold valuable funds. The demo transfers only a small devnet amount. The value of the mechanism is the permanent transaction reference and deterministic hash-to-address binding, not control of the recipient key.
+The public verifier does not upload the full receipt. It sends only public anchor evidence needed for read-only verification. Verification reports contain public proof metadata, not private keys.
+
+## Non-goals
+
+- R1.4 is not a custody system.
+- It is not connected to production commerce providers.
+- It does not replace authorization, authentication, audit retention, or compliance controls.
+- The hash-derived commitment transfer is not a dedicated Rialo registry program.

@@ -88,3 +88,62 @@ export function shortVerifierValue(value, size = 12) {
   if (text.length <= size * 2 + 1) return text;
   return `${text.slice(0, size)}…${text.slice(-size)}`;
 }
+
+
+export const VERIFICATION_REPORT_SCHEMA = "rialo-rewind.verification-report.v1";
+export const VERIFIER_VERSION = "r1.4";
+
+export function buildVerificationReport({
+  verdict,
+  receipt = null,
+  sourceFile = "",
+  integrity = null,
+  binding = null,
+  chain = null,
+  detail = "",
+  verifiedAt = new Date().toISOString(),
+  chainQueried = false,
+} = {}) {
+  const anchor = binding?.anchor || receipt?.onchainAnchor || null;
+  return Object.freeze({
+    schema: VERIFICATION_REPORT_SCHEMA,
+    verifierVersion: VERIFIER_VERSION,
+    verifiedAt,
+    verdict: String(verdict || "UNVERIFIED"),
+    sourceFile: String(sourceFile || ""),
+    workflowId: receipt?.workflowId || null,
+    executionId: receipt?.executionId || null,
+    suppliedHash: integrity?.suppliedHash || receipt?.receiptHash || null,
+    computedHash: integrity?.computedHash || null,
+    hashMatched: Boolean(integrity?.ok),
+    anchorBound: Boolean(binding?.ok),
+    commitmentAddress: anchor?.commitmentAddress || null,
+    signature: anchor?.signature || null,
+    blockHeight: chain?.blockHeight || anchor?.blockHeight || null,
+    chainStatus: chain?.status || null,
+    verificationMode: chain?.verificationMode || null,
+    chainQueried: Boolean(chainQueried),
+    fullReceiptUploaded: false,
+    detail: String(detail || ""),
+  });
+}
+
+export function formatVerificationSummary(report) {
+  if (!report || report.schema !== VERIFICATION_REPORT_SCHEMA) throw new Error("Verification report is missing or malformed.");
+  const line = (label, value) => `${label}: ${value ?? "—"}`;
+  return [
+    "Rialo Rewind Receipt Verification",
+    line("Verdict", report.verdict),
+    line("Workflow", report.workflowId),
+    line("Execution", report.executionId),
+    line("SHA-256 integrity", report.hashMatched ? "MATCHED" : "MISMATCH"),
+    line("Anchor binding", report.anchorBound ? "BOUND" : "NOT BOUND"),
+    line("Rialo status", report.chainStatus),
+    line("Block", report.blockHeight),
+    line("Verification mode", report.verificationMode),
+    line("Receipt hash", report.computedHash || report.suppliedHash),
+    line("Commitment", report.commitmentAddress),
+    line("Signature", report.signature),
+    line("Verified by", `Rialo Rewind ${report.verifierVersion.toUpperCase()}`),
+  ].join("\n");
+}

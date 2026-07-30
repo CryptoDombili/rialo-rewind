@@ -1,21 +1,25 @@
 # Roadmap
 
-## v0.5 — Signed devnet proof
+## Completed in R1.4
 
-- Live block-height and account queries.
-- Ephemeral devnet keypair lifecycle.
-- Confirmed faucet request.
-- Signed and confirmed system transfer.
-- Explorer-linked signature in the Proof Lab.
+- Server-side recovery state machine
+- Clean and controlled-failure paths
+- Retry ceiling and reverse compensation
+- Idempotency keys and portable receipts
+- Rialo signed proof and receipt-hash anchoring
+- Public receipt verifier and tamper challenge
+- Shareable verification summary/report
+- Public-demo documentation and regression checks
 
-## v0.7 — Recovery receipt registry
+## Next technical milestone
 
-- Deploy a dedicated Rialo program.
-- Anchor workflow ID, policy hash, result, failed step, compensation count, and receipt hash.
-- Read the registry account back into the console.
+A dedicated Rialo receipt registry/program that stores typed receipt commitments and exposes first-class lookup semantics. This should be treated as a separate protocol milestone, not silently represented as part of R1.4.
 
-## v0.7 — Reactive compensation
+## Production integrations
 
-- Register a REX subscription.
-- Trigger a downstream compensation transaction.
-- Render real workflow lineage and triggered transactions.
+- External inventory adapter
+- External merchant/order adapter
+- External courier adapter
+- Production escrow and authorization policy
+- Persistent execution storage and observability
+- Authentication, tenancy, and operator permissions
