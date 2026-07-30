@@ -1,32 +1,21 @@
 # Roadmap
 
-## v0.4 — Live foundation
+## v0.5 — Signed devnet proof
 
-- Modular project structure
-- Working workflow console
-- Live Rialo devnet network probe
-- Public account balance lookup
-- Restricted RPC proxy
-- Automated unit tests
+- Live block-height and account queries.
+- Ephemeral devnet keypair lifecycle.
+- Confirmed faucet request.
+- Signed and confirmed system transfer.
+- Explorer-linked signature in the Proof Lab.
 
-## v0.5 — Signed proof
+## v0.6 — Recovery receipt registry
 
-- Official Frost wallet connection
-- Signed devnet transfer or proof transaction
-- Transaction confirmation polling
-- Explorer link and signature in the workflow receipt
+- Deploy a dedicated Rialo program.
+- Anchor workflow ID, policy hash, result, failed step, compensation count, and receipt hash.
+- Read the registry account back into the console.
 
-## v0.6 — Onchain recovery registry
+## v0.7 — Reactive compensation
 
-- Deploy a Rialo-compatible program
-- Register workflow and compensation policy hashes
-- Anchor execution and recovery receipts
-- Query workflow lineage where supported
-
-## v1.0 — Reusable compensation engine
-
-- Workflow definition SDK
-- Idempotency registry
-- Retry and timeout policies
-- Human-review escalation
-- Multiple real-world workflow templates
+- Register a REX subscription.
+- Trigger a downstream compensation transaction.
+- Render real workflow lineage and triggered transactions.

@@ -95,7 +95,7 @@ export function initDevnetPanel({ showToast }) {
       text("proofAccountBalance", balance);
       text("proofAccountShort", `${address.slice(0, 6)}…${address.slice(-6)}`);
       if (explorerLink) {
-        explorerLink.href = `${EXPLORER_BASE}/account/${encodeURIComponent(address)}?cluster=devnet`;
+        explorerLink.href = `${EXPLORER_BASE}/accounts/${encodeURIComponent(address)}?cluster=devnet`;
         explorerLink.removeAttribute("aria-disabled");
       }
       showToast("ACCOUNT LOADED", `${balance} confirmed by Rialo devnet.`);

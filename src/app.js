@@ -1,4 +1,5 @@
 import { initDevnetPanel } from "./rialo/devnet-panel.js";
+import { initSignedProof } from "./rialo/signed-proof.js";
 import { createWorkflowReceipt, serializeReceipt } from "./core/receipt.js";
 
 (() => {
@@ -19,7 +20,7 @@ import { createWorkflowReceipt, serializeReceipt } from "./core/receipt.js";
       const faultAttempt = $("#faultAttempt");
       const phaseFlash = $("#phaseFlash");
       const resultBanner = $("#resultBanner");
-      const walletModal = $("#walletModal");
+      const proofLabModal = $("#proofLabModal");
       const toast = $("#toast");
       const receiptButton = $('[data-action="receipt"]');
 
@@ -361,14 +362,14 @@ import { createWorkflowReceipt, serializeReceipt } from "./core/receipt.js";
         showToast("RECEIPT EXPORTED", "JSON proof saved to your downloads.");
       }
 
-      function openWalletModal() {
-        walletModal.classList.add("is-visible");
-        walletModal.setAttribute("aria-hidden", "false");
-        $(".modal-close", walletModal).focus();
+      function openProofLab() {
+        proofLabModal.classList.add("is-visible");
+        proofLabModal.setAttribute("aria-hidden", "false");
+        $(".modal-close", proofLabModal).focus();
       }
-      function closeWalletModal() {
-        walletModal.classList.remove("is-visible");
-        walletModal.setAttribute("aria-hidden", "true");
+      function closeProofLab() {
+        proofLabModal.classList.remove("is-visible");
+        proofLabModal.setAttribute("aria-hidden", "true");
       }
 
       document.addEventListener("click", (event) => {
@@ -386,14 +387,14 @@ import { createWorkflowReceipt, serializeReceipt } from "./core/receipt.js";
         else if (action === "failure") failureFlow();
         else if (action === "reset") resetUI({ notify: true });
         else if (action === "receipt") exportReceipt();
-        else if (action === "wallet") openWalletModal();
-        else if (action === "close-modal") closeWalletModal();
+        else if (action === "proof-lab") openProofLab();
+        else if (action === "close-modal") closeProofLab();
         else if (action === "home") { resetUI({ notify: true }); }
       });
 
-      walletModal.addEventListener("click", (event) => { if (event.target === walletModal) closeWalletModal(); });
+      proofLabModal.addEventListener("click", (event) => { if (event.target === proofLabModal) closeProofLab(); });
       document.addEventListener("keydown", (event) => {
-        if (event.key === "Escape") closeWalletModal();
+        if (event.key === "Escape") closeProofLab();
         if (event.target.matches("input, textarea, select")) return;
         if (event.key === "1") cleanFlow();
         if (event.key === "2") failureFlow();
@@ -402,5 +403,6 @@ import { createWorkflowReceipt, serializeReceipt } from "./core/receipt.js";
 
       resetUI({ keepLogs: true });
       initDevnetPanel({ showToast });
+      initSignedProof({ showToast });
       setTimeout(() => showToast("CONSOLE READY", "Local recovery engine ready. Live Rialo devnet probe started."), 350);
     })();

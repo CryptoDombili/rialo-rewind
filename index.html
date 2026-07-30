@@ -18,8 +18,8 @@
         <span class="label">ACTIVE CASE</span><strong>RW–0247</strong><span class="divider"></span><span>ORDER FULFILLMENT</span><span class="divider"></span><span>50.00 RLO ESCROW</span>
       </div>
       <div class="top-actions">
-        <div class="network-state" id="networkState" data-tone="probing"><i></i><span id="networkLabel">DEVNET PROBING</span><b id="networkBlock" hidden>—</b></div>
-        <button class="connect-button" type="button" data-action="wallet">DEVNET PROOF <span>↗</span></button>
+        <div class="network-state" id="networkState" data-tone="probing"><i></i><span id="networkLabel">DEVNET PROBING</span></div>
+        <button class="connect-button" type="button" data-action="proof-lab">SIGNED PROOF <span>↗</span></button>
       </div>
     </header>
 
@@ -35,7 +35,7 @@
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 4 7v5c0 5 3.4 8.3 8 9 4.6-.7 8-4 8-9V7l-8-4Z"/><path d="m9 12 2 2 4-5"/></svg><span>RULES</span>
         </button>
       </div>
-      <div class="rail-version"><span>BUILD</span><strong>00.04</strong></div>
+      <div class="rail-version"><span>BUILD</span><strong>00.05</strong></div>
     </aside>
 
     <main class="workspace">
@@ -143,9 +143,9 @@
 
       <section class="rail-view proof-summary" data-panel="proof">
         <div class="inspector-head"><span>PROOF LAYER</span><span>RW–0247</span></div>
+        <div class="summary-card live-proof-card"><div class="summary-head"><span>RIALO DEVNET</span><span id="proofNetworkStatus">PROBING</span></div><h3>Live chain telemetry</h3><ul class="summary-list"><li><span>Finalized block</span><strong id="proofBlockHeight">—</strong></li><li><span>Signed proof</span><strong id="proofSignedStatus">NOT RUN</strong></li><li><span>Signature</span><strong id="proofSignatureShort">—</strong></li></ul><button class="proof-launch" type="button" data-action="proof-lab">OPEN SIGNED PROOF LAB <span>↗</span></button></div>
         <div class="summary-card"><div class="summary-head"><span>WORKFLOW RECEIPT</span><span id="proofStatus">WAITING</span></div><h3 id="proofTitle">No receipt issued</h3><p id="proofText">Run a clean flow or inject a failure. The console will produce a portable execution receipt.</p></div>
-        <div class="summary-card live-proof-card"><div class="summary-head"><span>RIALO DEVNET</span><span id="proofNetworkStatus">PROBING</span></div><h3>Live chain telemetry</h3><ul class="summary-list"><li><span>Block height</span><strong id="proofBlockHeight">—</strong></li><li><span>Tracked account</span><strong id="proofAccountShort">NOT LOADED</strong></li><li><span>Account balance</span><strong id="proofAccountBalance">—</strong></li></ul></div>
-        <div class="summary-card"><div class="summary-head"><span>TRACE SUMMARY</span><span>LOCAL ENGINE</span></div><ul class="summary-list"><li><span>Workflow ID</span><strong>RW–0247</strong></li><li><span>Protected escrow</span><strong>50.00 RLO</strong></li><li><span>Forward steps</span><strong>5</strong></li><li><span>Compensation steps</span><strong>3</strong></li><li><span>Manual intervention</span><strong id="proofManual">—</strong></li></ul></div>
+        <div class="summary-card"><div class="summary-head"><span>TRACE SUMMARY</span><span>DETERMINISTIC ENGINE</span></div><ul class="summary-list"><li><span>Workflow ID</span><strong>RW–0247</strong></li><li><span>Protected escrow</span><strong>50.00 RLO</strong></li><li><span>Forward steps</span><strong>5</strong></li><li><span>Compensation steps</span><strong>3</strong></li><li><span>Manual intervention</span><strong id="proofManual">—</strong></li></ul></div>
       </section>
 
       <section class="rail-view rules-summary" data-panel="rules">
@@ -156,28 +156,45 @@
       </section>
     </aside>
 
-    <div class="modal-backdrop" id="walletModal" aria-hidden="true">
-      <div class="modal modal-wide" role="dialog" aria-modal="true" aria-labelledby="walletTitle">
-        <div class="modal-head"><span>RIALO DEVNET PROOF</span><button class="modal-close" type="button" data-action="close-modal" aria-label="Close">×</button></div>
-        <div class="modal-body devnet-modal-body">
-          <span class="status-pill"><i></i> LIVE RPC ADAPTER</span>
-          <h3 id="walletTitle">Verify the chain before trusting the workflow.</h3>
-          <p>The recovery engine remains deterministic and local in this build. This panel reads live Rialo devnet telemetry through a restricted server-side RPC proxy.</p>
-          <div class="devnet-readouts">
-            <div><span>NETWORK</span><strong id="devnetStatus">PROBING</strong></div>
-            <div><span>BLOCK HEIGHT</span><strong id="devnetHeight">—</strong></div>
-            <div><span>RPC LATENCY</span><strong id="devnetLatency">—</strong></div>
+    <div class="modal-backdrop" id="proofLabModal" aria-hidden="true">
+      <div class="modal modal-wide proof-lab" role="dialog" aria-modal="true" aria-labelledby="proofLabTitle">
+        <div class="modal-head"><span>RIALO SIGNED PROOF LAB / DEVNET</span><button class="modal-close" type="button" data-action="close-modal" aria-label="Close">×</button></div>
+        <div class="proof-lab-body">
+          <section class="proof-lab-intro">
+            <div><span class="status-pill"><i></i> REAL DEVNET TRANSACTION</span><h3 id="proofLabTitle">Generate, fund, sign and confirm.</h3><p>The proof runner creates two disposable server-side devnet keypairs, requests test RLO, signs a system transfer and returns the confirmed signature. No seed phrase is stored or sent to the browser.</p></div>
+            <div class="proof-network-box">
+              <span>NETWORK</span><strong id="devnetStatus">CONNECTING</strong><small>BLOCK <b id="devnetHeight">—</b></small><small>LATENCY <b id="devnetLatency">—</b></small>
+            </div>
+          </section>
+
+          <div class="proof-actions-row">
+            <button type="button" id="probeDevnet" class="lab-secondary">PROBE NETWORK</button>
+            <button type="button" id="runSignedProof" class="lab-primary">RUN SIGNED DEVNET PROOF <span>↗</span></button>
           </div>
-          <p class="devnet-error" id="devnetError" aria-live="polite"></p>
-          <div class="account-probe">
-            <div class="account-probe-head"><span>PUBLIC ACCOUNT PROBE</span><strong id="accountStatus">NOT LOADED</strong></div>
-            <label for="rialoAddress">Rialo public address</label>
-            <div class="account-input-row"><input id="rialoAddress" name="rialoAddress" autocomplete="off" spellcheck="false" placeholder="Paste the public key from Rialo Playground" /><button id="loadRialoAccount" type="button">LOAD ACCOUNT</button></div>
-            <small>Public address only. Never paste a seed phrase or private key.</small>
-            <div class="account-results"><div><span>BALANCE</span><strong id="accountBalance">—</strong></div><div><span>RECENT ACTIVITY</span><strong id="accountHistory">—</strong></div><a id="accountExplorerLink" aria-disabled="true" target="_blank" rel="noreferrer">OPEN EXPLORER ↗</a></div>
-          </div>
+          <p class="devnet-error" id="devnetError"></p>
+
+          <section class="proof-sequence" aria-label="Signed proof stages">
+            <article data-proof-step="wallet"><span>01</span><div><small>EPHEMERAL KEYPAIR</small><strong id="proofStepWallet">WAITING</strong><p id="proofWalletAddress">No address generated</p></div></article>
+            <article data-proof-step="fund"><span>02</span><div><small>DEVNET AIRDROP</small><strong id="proofStepFund">WAITING</strong><p id="proofFundAmount">0.050000 RLO requested</p></div></article>
+            <article data-proof-step="sign"><span>03</span><div><small>SIGNED TRANSFER</small><strong id="proofStepSign">WAITING</strong><p>0.001000 RLO system transfer</p></div></article>
+            <article data-proof-step="confirm"><span>04</span><div><small>FINALITY</small><strong id="proofStepConfirm">WAITING</strong><p id="proofBlockResult">Awaiting confirmation</p></div></article>
+          </section>
+
+          <section class="proof-result" id="signedProofResult" data-state="idle">
+            <div class="proof-result-head"><span>ONCHAIN RESULT</span><strong id="signedProofBadge">NOT RUN</strong></div>
+            <div class="proof-result-main"><div><small>TRANSACTION SIGNATURE</small><code id="signedProofSignature">—</code></div><a id="signedProofExplorer" href="#" target="_blank" rel="noreferrer" aria-disabled="true">VIEW ON EXPLORER ↗</a></div>
+            <div class="proof-result-grid"><div><span>SENDER BEFORE</span><strong id="proofBalanceBefore">—</strong></div><div><span>SENDER AFTER</span><strong id="proofBalanceAfter">—</strong></div><div><span>RECIPIENT</span><strong id="proofRecipientShort">—</strong></div><div><span>DURATION</span><strong id="proofDuration">—</strong></div></div>
+          </section>
+
+          <section class="account-probe">
+            <div class="account-probe-head"><span>PUBLIC ACCOUNT LOOKUP</span><strong id="accountStatus">READY</strong></div>
+            <label for="rialoAddress">RIALO PUBLIC ADDRESS</label>
+            <div class="account-input-row"><input id="rialoAddress" autocomplete="off" spellcheck="false" placeholder="Paste a public address — never a private key" /><button type="button" id="loadRialoAccount">LOAD ACCOUNT</button></div>
+            <small>Read-only query through the restricted Vercel RPC proxy.</small>
+            <div class="account-results"><div><span>BALANCE</span><strong id="accountBalance">—</strong></div><div><span>RECENT ACTIVITY</span><strong id="accountHistory">—</strong></div><a id="accountExplorerLink" href="#" target="_blank" rel="noreferrer" aria-disabled="true">OPEN ACCOUNT ↗</a></div>
+          </section>
         </div>
-        <div class="modal-actions"><button type="button" data-action="close-modal">CLOSE</button><button class="primary" id="probeDevnet" type="button">PROBE NETWORK</button></div>
+        <div class="modal-actions"><button type="button" data-action="close-modal">CLOSE LAB</button><button class="primary" type="button" id="copyProofSignature" disabled>COPY SIGNATURE</button></div>
       </div>
     </div>
 

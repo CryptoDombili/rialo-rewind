@@ -1,8 +1,10 @@
-# Security boundaries
+# Security
 
-- The application never asks for a seed phrase or private key.
-- The v0.4 RPC proxy is read-only and method allowlisted.
-- The workflow animation is explicitly local and deterministic.
-- The UI must not label local trace IDs as Rialo transaction signatures.
-- Signed actions will only be added through the official Rialo wallet integration.
-- RPC errors are shown rather than replaced by fabricated success states.
+- Never paste a seed phrase or private key into Rialo Rewind.
+- Public account lookup is read-only.
+- The signed proof creates disposable devnet-only keypairs inside one serverless request.
+- Private key material is not logged, persisted, or returned to the browser.
+- Both keypairs are disposed in a `finally` block.
+- The proof endpoint accepts one fixed intent and no transaction parameters from the user.
+- Amounts are hard-coded to 0.05 RLO faucet funding and a 0.001 RLO transfer.
+- The existing RPC proxy uses an allowlist of read-only methods.

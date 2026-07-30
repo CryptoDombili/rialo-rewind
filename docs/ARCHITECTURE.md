@@ -1,29 +1,17 @@
 # Architecture
 
-## Browser layer
+## Browser
 
-`src/app.js` controls the workflow console and its deterministic demo execution. It does not claim that local trace IDs are Rialo signatures.
+- `index.html` and `src/styles/app.css`: industrial recovery console.
+- `src/app.js`: deterministic forward/failure/compensation state machine.
+- `src/rialo/devnet-panel.js`: live block and public-account queries.
+- `src/rialo/signed-proof.js`: signed-proof UI state and result rendering.
 
-`src/rialo/devnet-panel.js` renders live network and public-account data. It talks only to the same-origin `/api/rialo` endpoint.
+## Vercel functions
 
-## RPC boundary
+- `api/rialo.js`: allowlisted read-only JSON-RPC proxy.
+- `api/proof.js`: fixed devnet proof runner. It creates disposable keypairs, requests faucet funds, signs a transfer, waits for confirmation, returns public proof fields, then disposes key material.
 
-`api/rialo.js` is a restricted read-only proxy. It only forwards an explicit allowlist of Rialo JSON-RPC methods, applies a timeout, and never accepts private keys or transaction signing material.
+## Next onchain layer
 
-## Recovery model
-
-The order workflow executes five forward actions:
-
-1. Reserve inventory
-2. Lock escrow
-3. Create merchant order
-4. Create shipment
-5. Settle payment
-
-If shipment creation reaches the retry ceiling, Rewind executes the compensation stack in reverse order:
-
-1. Refund escrow
-2. Cancel merchant order
-3. Release inventory
-
-The implementation models compensating transactions, not historical rollback. Every compensation is a new action that restores business state.
+The dedicated recovery registry program will persist receipt hashes and compensation results. The local state machine will remain deterministic and will submit only the final proof envelope onchain.
