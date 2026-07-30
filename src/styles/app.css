@@ -661,7 +661,7 @@ body { font-size: 16px; }
 @media (max-width: 1450px) { .receipt-actions { grid-template-columns: 1fr; } .receipt-actions button + button { border-left: 0; border-top: 1px solid var(--line); } }
 
 
-/* PUBLIC RECEIPT VERIFIER — R1.4.3 */
+/* PUBLIC RECEIPT VERIFIER — R1.4.4 */
 .verifier-summary-card .summary-head strong { color: var(--muted); font: 800 9px/1 var(--mono); }
 .verifier-summary-card .summary-head strong[data-tone="valid"] { color: var(--acid); }
 .verifier-summary-card .summary-head strong[data-tone="tampered"],
@@ -726,7 +726,7 @@ body { font-size: 16px; }
 }
 
 
-/* R1.4.3 final product polish */
+/* R1.4.4 final product polish */
 .verifier-actions button { min-width: 0; padding-inline: 10px; white-space: nowrap; }
 .verifier-actions #verifierCopyButton:not(:disabled),
 .verifier-actions #verifierDownloadButton:not(:disabled) { color: var(--cyan); }
@@ -748,7 +748,7 @@ body { font-size: 16px; }
 }
 
 
-/* R1.4.3 — dense signal sky + collision-free failure diagnostic */
+/* R1.4.4 — courier-linked diagnostic + responsive clearance */
 .process-field {
   isolation: isolate;
   background:
@@ -837,14 +837,14 @@ body { font-size: 16px; }
 }
 .reverse-node { min-height: 142px; }
 
-/* The courier diagnostic now occupies the empty channel between cancel and refund. */
+/* The failure diagnostic sits directly beneath step 04 and points back to the courier node. */
 .fault-gate {
-  left: 66%;
-  top: 294px;
-  width: 136px;
-  min-height: 82px;
+  left: 73%;
+  top: 306px;
+  width: 128px;
+  min-height: 80px;
   transform: translateX(-50%);
-  padding: 11px 11px 10px 13px;
+  padding: 11px 10px 10px 13px;
   gap: 4px;
   opacity: .84;
   z-index: 6;
@@ -854,14 +854,28 @@ body { font-size: 16px; }
   box-shadow: 0 15px 30px rgba(0,0,0,.36), inset 0 1px 0 rgba(255,255,255,.025);
   backdrop-filter: blur(5px);
 }
+/* A compact vertical tracer makes the diagnostic unambiguously belong to step 04. */
 .fault-gate::before {
   content: "";
   position: absolute;
-  left: 100%;
-  top: 28px;
-  width: clamp(42px, 5vw, 82px);
-  height: 1px;
-  background: linear-gradient(to right, rgba(255,90,55,.75), transparent);
+  left: 50%;
+  bottom: 100%;
+  width: 1px;
+  height: 38px;
+  transform: translateX(-50%);
+  background: linear-gradient(to top, rgba(255,90,55,.9), rgba(255,90,55,.22));
+  box-shadow: 0 0 10px rgba(255,90,55,.18);
+}
+.fault-gate::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 34px);
+  width: 7px;
+  height: 7px;
+  border-top: 1px solid var(--red-2);
+  border-left: 1px solid var(--red-2);
+  transform: translateX(-50%) rotate(45deg);
 }
 .fault-code { font-size: 27px; line-height: .9; }
 .fault-title { font-size: 10px; color: var(--paper); }
@@ -889,29 +903,39 @@ body { font-size: 16px; }
 @media (max-width: 1600px) {
   .workflow-node { width: 138px; }
   .fault-gate {
-    left: 65%;
-    top: 286px;
-    width: 130px;
+    left: 73%;
+    top: 298px;
+    width: 122px;
   }
-  .fault-gate::before { width: 48px; }
+  .fault-gate::before { height: 32px; }
+  .fault-gate::after { bottom: calc(100% + 28px); }
 }
 
 @media (max-width: 1360px) {
   .workflow-node { width: 130px; padding-inline: 11px; }
   .node-title { font-size: 17px; }
   .fault-gate {
-    left: 64%;
-    top: 282px;
-    width: 124px;
+    left: 73%;
+    top: 286px;
+    width: 116px;
+    min-height: 76px;
+    padding-inline: 11px 8px;
   }
-  .fault-gate::before { display: none; }
+  .fault-gate::before { height: 24px; }
+  .fault-gate::after { bottom: calc(100% + 20px); }
 }
 
 @media (max-height: 900px) {
   .field-footnote { bottom: 15px; padding-block: 5px; }
   .direction-reverse { bottom: 56px; }
   .workflow-reverse { bottom: 174px; }
-  .fault-gate { top: 284px; }
+  .fault-gate {
+    top: 276px;
+    width: 112px;
+    min-height: 72px;
+  }
+  .fault-gate::before { height: 20px; }
+  .fault-gate::after { bottom: calc(100% + 16px); }
 }
 
 @media (prefers-reduced-motion: reduce) {

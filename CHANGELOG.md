@@ -1,6 +1,6 @@
 # Changelog
 
-## R1.4.3 — Signal sky and collision-free diagnostics
+## R1.4.4 — Signal sky and collision-free diagnostics
 
 - Rebuilt the ambient starfield as a denser, irregular Rialo telemetry sky.
 - Moved the 503 failure gate into the empty channel between compensation nodes.
