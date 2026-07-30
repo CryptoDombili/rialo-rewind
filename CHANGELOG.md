@@ -1,12 +1,10 @@
-## R1.5.2 — Open-source header link
+## R1.5.3 — Header placement correction
 
-- added a first-class OPEN SOURCE button in the top operations bar
-- links directly to the public GitHub repository in a new tab
-- preserved the console layout at 1080p and 2K resolutions
+- moved OPEN SOURCE to the right edge of the middle case strip
+- restored the original DEVNET and SIGNED PROOF layout without resizing or shifting them
+- preserved the R1.5 visual system and all workflow behavior
 
-# Changelog
-
-## R1.5.2 — Final public-demo release
+## R1.5.3 — Final public-demo release
 
 - Froze the working recovery, receipt, anchor, verifier, report, and tamper flows.
 - Finalized the animated Rialo signal field and collision-free step-04 failure diagnostic.

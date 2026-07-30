@@ -686,7 +686,7 @@ body { font-size: 16px; }
 @media (max-width: 1450px) { .receipt-actions { grid-template-columns: 1fr; } .receipt-actions button + button { border-left: 0; border-top: 1px solid var(--line); } }
 
 
-/* PUBLIC RECEIPT VERIFIER — R1.5.2 */
+/* PUBLIC RECEIPT VERIFIER — R1.5.3 */
 .verifier-summary-card .summary-head strong { color: var(--muted); font: 800 9px/1 var(--mono); }
 .verifier-summary-card .summary-head strong[data-tone="valid"] { color: var(--acid); }
 .verifier-summary-card .summary-head strong[data-tone="tampered"],
@@ -751,7 +751,7 @@ body { font-size: 16px; }
 }
 
 
-/* R1.5.2 final product polish */
+/* R1.5.3 final product polish */
 .verifier-actions button { min-width: 0; padding-inline: 10px; white-space: nowrap; }
 .verifier-actions #verifierCopyButton:not(:disabled),
 .verifier-actions #verifierDownloadButton:not(:disabled) { color: var(--cyan); }
@@ -773,7 +773,7 @@ body { font-size: 16px; }
 }
 
 
-/* R1.5.2 — animated starfield + fault-card clearance */
+/* R1.5.3 — animated starfield + fault-card clearance */
 .process-field {
   isolation: isolate;
   background:
@@ -966,38 +966,35 @@ body { font-size: 16px; }
   .star-layer-a, .star-layer-b, .star-layer-c { animation: none !important; }
 }
 
-
-/* R1.5.2 — far-right open-source action */
-.topbar { grid-template-columns: 300px minmax(420px, 1fr) 548px; }
-.case-strip { overflow: hidden; }
-.top-actions {
+/* R1.5.3 — source action at the right edge of the case strip.
+   DEVNET and SIGNED PROOF retain their original dimensions and positions. */
+.case-strip {
   display: grid;
-  grid-template-columns: minmax(178px, 1fr) 176px 166px;
-  border-left: 1px solid var(--line);
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+  padding: 0 14px 0 20px;
+  overflow: hidden;
 }
-.top-actions .source-button {
-  min-height: 100%;
-  height: 100%;
+.case-copy {
+  min-width: 0;
+  display: flex;
+  align-items: center;
   justify-content: center;
-  padding: 0 15px;
-  border: 0;
-  border-left: 1px solid var(--line);
-  border-radius: 0;
-  box-shadow: inset 0 3px 0 var(--acid);
-  background: #0d1110;
+  gap: 14px;
   white-space: nowrap;
 }
-.top-actions .source-button:hover {
-  box-shadow: inset 0 3px 0 var(--acid), 0 0 22px rgba(201,244,67,.10);
+.case-strip > .source-button {
+  justify-self: end;
+  flex: 0 0 auto;
+  white-space: nowrap;
 }
-@media (max-width: 1500px) {
-  .topbar { grid-template-columns: 270px minmax(360px, 1fr) 496px; }
-  .top-actions { grid-template-columns: minmax(160px, 1fr) 164px 148px; }
-  .top-actions .source-button { padding-inline: 10px; font-size: 9px; gap: 7px; }
+@media (max-width: 1600px) {
+  .case-strip { gap: 10px; padding-inline: 12px; }
+  .case-copy { gap: 9px; font-size: 9px; letter-spacing: .08em; }
 }
 @media (max-width: 1250px) {
-  .topbar { grid-template-columns: 250px minmax(330px, 1fr) 460px; }
-  .top-actions { grid-template-columns: minmax(145px, 1fr) 160px 132px; }
-  .top-actions .source-button span { font-size: 8px; }
-  .top-actions .source-button svg { width: 13px; height: 13px; }
+  .case-strip { padding-inline: 8px; }
+  .case-strip > .source-button { padding-inline: 8px; gap: 6px; }
+  .case-strip > .source-button span { font-size: 8px; }
 }

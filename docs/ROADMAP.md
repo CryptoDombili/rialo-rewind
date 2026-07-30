@@ -1,6 +1,6 @@
 # Roadmap
 
-## Completed in R1.5.2
+## Completed in R1.5.3
 
 - Server-side recovery state machine
 - Clean and controlled-failure paths
@@ -14,7 +14,7 @@
 
 ## Next protocol milestone
 
-Build a dedicated Rialo receipt registry/program that stores typed receipt commitments and exposes first-class lookup semantics. This is a separate protocol milestone and is not represented as part of R1.5.2.
+Build a dedicated Rialo receipt registry/program that stores typed receipt commitments and exposes first-class lookup semantics. This is a separate protocol milestone and is not represented as part of R1.5.3.
 
 ## Production integrations
 
