@@ -1,5 +1,3 @@
-const EXPLORER_BASE = "https://explorer.rialo.io";
-
 function byId(id) {
   return document.getElementById(id);
 }
@@ -21,8 +19,8 @@ function short(value, head = 7, tail = 7) {
   return `${value.slice(0, head)}…${value.slice(-tail)}`;
 }
 
-function explorerUrl(signature) {
-  return `${EXPLORER_BASE}/transactions/${encodeURIComponent(signature)}?cluster=devnet`;
+function sleep(ms) {
+  return new Promise((resolve) => window.setTimeout(resolve, ms));
 }
 
 function resetProofUi() {
@@ -39,11 +37,8 @@ function resetProofUi() {
   setText("proofSignatureShort", "—");
   const result = byId("signedProofResult");
   if (result) result.dataset.state = "idle";
-  const explorer = byId("signedProofExplorer");
-  if (explorer) {
-    explorer.href = "#";
-    explorer.setAttribute("aria-disabled", "true");
-  }
+  const verify = byId("signedProofVerify");
+  if (verify) verify.disabled = true;
   const copy = byId("copyProofSignature");
   if (copy) copy.disabled = true;
 }
@@ -61,7 +56,9 @@ function markFailure(stage) {
 export function initSignedProof({ showToast }) {
   const runButton = byId("runSignedProof");
   const copyButton = byId("copyProofSignature");
+  const verifyButton = byId("signedProofVerify");
   let active = false;
+  let verifying = false;
   let lastSignature = "";
   let progressTimers = [];
 
@@ -75,12 +72,65 @@ export function initSignedProof({ showToast }) {
     lastSignature = payload.signature;
     setText("signedProofSignature", payload.signature);
     setText("proofSignatureShort", short(payload.signature, 5, 5));
-    const explorer = byId("signedProofExplorer");
-    if (explorer) {
-      explorer.href = explorerUrl(payload.signature);
-      explorer.removeAttribute("aria-disabled");
-    }
+    if (verifyButton) verifyButton.disabled = false;
     if (copyButton) copyButton.disabled = false;
+  }
+
+  function markConfirmed(blockHeight, announce = true) {
+    setStep("confirm", "complete", "FINALIZED");
+    setText("proofBlockResult", blockHeight ? `Verified near block ${blockHeight}` : "Verified by Rialo devnet");
+    setText("signedProofBadge", "CONFIRMED");
+    setText("proofSignedStatus", "CONFIRMED");
+    const result = byId("signedProofResult");
+    if (result) result.dataset.state = "success";
+    if (announce) showToast("ONCHAIN PROOF CONFIRMED", `Rialo signature ${short(lastSignature)}.`);
+  }
+
+  async function verifyOnchain({ announce = true } = {}) {
+    if (!lastSignature || verifying) return false;
+    verifying = true;
+    if (verifyButton) verifyButton.disabled = true;
+    setText("signedProofBadge", "VERIFYING");
+    setText("proofSignedStatus", "VERIFYING");
+    try {
+      const response = await fetch("/api/verify", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          "x-rewind-proof": "v0.8",
+        },
+        body: JSON.stringify({ signature: lastSignature }),
+      });
+      const payload = await response.json().catch(() => ({}));
+      if (payload.ok !== true) throw new Error(payload.error?.message || `Verification returned HTTP ${response.status}.`);
+      if (payload.status === "confirmed") {
+        markConfirmed(payload.blockHeight, announce);
+        return true;
+      }
+      setStep("confirm", "running", "SUBMITTED");
+      setText("proofBlockResult", payload.blockHeight ? `Still indexing near block ${payload.blockHeight}` : "Still indexing on Rialo devnet");
+      setText("signedProofBadge", "SUBMITTED");
+      setText("proofSignedStatus", "SUBMITTED");
+      const result = byId("signedProofResult");
+      if (result) result.dataset.state = "pending";
+      if (announce) showToast("STILL INDEXING", "The transaction is submitted; Rialo finality is not visible yet.");
+      return false;
+    } catch (error) {
+      setText("signedProofBadge", "VERIFY ERROR");
+      setText("proofSignedStatus", "VERIFY ERROR");
+      if (announce) showToast("VERIFY FAILED", error.message);
+      return false;
+    } finally {
+      verifying = false;
+      if (verifyButton) verifyButton.disabled = !lastSignature;
+    }
+  }
+
+  async function autoVerify() {
+    for (let attempt = 0; attempt < 6; attempt += 1) {
+      await sleep(attempt === 0 ? 1_500 : 3_000);
+      if (await verifyOnchain({ announce: attempt === 5 })) return;
+    }
   }
 
   async function runProof() {
@@ -110,7 +160,7 @@ export function initSignedProof({ showToast }) {
         method: "POST",
         headers: {
           "content-type": "application/json",
-          "x-rewind-proof": "v0.7",
+          "x-rewind-proof": "v0.8",
         },
         body: JSON.stringify({ intent: "signed-devnet-proof" }),
         signal: controller.signal,
@@ -140,14 +190,10 @@ export function initSignedProof({ showToast }) {
         setText("signedProofBadge", "SUBMITTED");
         setText("proofSignedStatus", "SUBMITTED");
         if (result) result.dataset.state = "pending";
-        showToast("PROOF SUBMITTED", "The signature is live. Explorer finality may appear shortly.");
+        showToast("PROOF SUBMITTED", "The base58 signature is valid. Rechecking finality automatically.");
+        void autoVerify();
       } else {
-        setStep("confirm", "complete", "FINALIZED");
-        setText("proofBlockResult", payload.blockHeight ? `Finalized at block ${payload.blockHeight}` : "Confirmed by Rialo devnet");
-        setText("signedProofBadge", "CONFIRMED");
-        setText("proofSignedStatus", "CONFIRMED");
-        if (result) result.dataset.state = "success";
-        showToast("SIGNED PROOF CONFIRMED", `Rialo signature ${short(payload.signature)}.`);
+        markConfirmed(payload.blockHeight);
       }
     } catch (error) {
       clearTimers();
@@ -167,16 +213,17 @@ export function initSignedProof({ showToast }) {
   }
 
   runButton?.addEventListener("click", runProof);
+  verifyButton?.addEventListener("click", () => void verifyOnchain());
   copyButton?.addEventListener("click", async () => {
     if (!lastSignature) return;
     try {
       await navigator.clipboard.writeText(lastSignature);
-      showToast("SIGNATURE COPIED", "The devnet signature is on your clipboard.");
+      showToast("SIGNATURE COPIED", "The Rialo base58 signature is on your clipboard.");
     } catch {
       showToast("COPY FAILED", "Select the signature manually and copy it.");
     }
   });
 
   resetProofUi();
-  return { runProof, resetProofUi };
+  return { runProof, resetProofUi, verifyOnchain };
 }

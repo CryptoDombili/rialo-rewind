@@ -6,7 +6,6 @@ import {
   unwrapRpcValue,
 } from "./devnet-client.js";
 
-const EXPLORER_BASE = "https://explorer.rialo.io";
 
 function text(id, value) {
   const node = document.getElementById(id);
@@ -96,10 +95,6 @@ export function initDevnetPanel({ showToast }) {
       text("accountHistory", `${count} recent`);
       text("proofAccountBalance", balance);
       text("proofAccountShort", `${address.slice(0, 6)}…${address.slice(-6)}`);
-      if (explorerLink) {
-        explorerLink.href = `${EXPLORER_BASE}/accounts/${encodeURIComponent(address)}?cluster=devnet`;
-        explorerLink.removeAttribute("aria-disabled");
-      }
       showToast("ACCOUNT LOADED", `${balance} confirmed by Rialo devnet.`);
     } catch (error) {
       text("accountStatus", "FAILED");

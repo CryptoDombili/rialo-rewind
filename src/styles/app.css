@@ -493,9 +493,10 @@
 .proof-result-main > div { padding: 13px; min-width: 0; }
 .proof-result-main small { color: var(--faint); font: 7px/1 var(--mono); letter-spacing: .1em; }
 .proof-result-main code { display: block; margin-top: 11px; color: var(--paper); font: 10px/1.35 var(--mono); word-break: break-all; }
-.proof-result-main a { display: grid; place-items: center; border-left: 1px solid var(--line); color: var(--paper); text-decoration: none; font: 800 8px/1 var(--mono); letter-spacing: .08em; }
-.proof-result-main a:hover { background: var(--acid); color: var(--black); }
-.proof-result-main a[aria-disabled="true"] { pointer-events: none; color: var(--faint); opacity: .45; }
+.proof-result-main button { background: transparent; border: 0; border-left: 1px solid var(--line); cursor: pointer; color: var(--paper); font: 800 8px/1 var(--mono); letter-spacing: .08em; }
+.proof-result-main a, .proof-result-main button { display: grid; place-items: center; border-left: 1px solid var(--line); color: var(--paper); text-decoration: none; font: 800 8px/1 var(--mono); letter-spacing: .08em; }
+.proof-result-main a:hover, .proof-result-main button:hover:not(:disabled) { background: var(--acid); color: var(--black); }
+.proof-result-main a[aria-disabled="true"], .proof-result-main button:disabled { pointer-events: none; color: var(--faint); opacity: .45; }
 .proof-result-grid { display: grid; grid-template-columns: repeat(4, 1fr); border-top: 1px solid var(--line); }
 .proof-result-grid > div { min-height: 62px; padding: 11px 12px; display: grid; align-content: space-between; border-right: 1px solid var(--line); }
 .proof-result-grid > div:last-child { border-right: 0; }
@@ -509,7 +510,7 @@
   .proof-sequence article:nth-child(2) { border-right: 0; }
   .proof-sequence article:nth-child(-n+2) { border-bottom: 1px solid var(--line); }
   .proof-result-main { grid-template-columns: 1fr; }
-  .proof-result-main a { border-left: 0; border-top: 1px solid var(--line); min-height: 48px; }
+  .proof-result-main a, .proof-result-main button { border-left: 0; border-top: 1px solid var(--line); min-height: 48px; }
   .proof-result-grid { grid-template-columns: 1fr 1fr; }
   .proof-result-grid > div:nth-child(2) { border-right: 0; }
   .proof-result-grid > div:nth-child(-n+2) { border-bottom: 1px solid var(--line); }

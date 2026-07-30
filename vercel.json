@@ -27,6 +27,9 @@
     },
     "api/proof.js": {
       "maxDuration": 60
+    },
+    "api/verify.js": {
+      "maxDuration": 20
     }
   }
 }

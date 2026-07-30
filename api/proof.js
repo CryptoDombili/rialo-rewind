@@ -5,6 +5,7 @@ import {
   getDefaultRialoClientConfig,
   transferInstruction,
 } from "@rialo/ts-cdk";
+import { normalizeRpcSignature } from "../src/rialo/signature-format.js";
 
 export const config = { maxDuration: 60 };
 
@@ -135,7 +136,7 @@ export default async function handler(req, res) {
   if (!sameOrigin(req)) {
     return send(res, 403, { ok: false, error: { message: "Same-origin request required." } });
   }
-  if (req.headers["x-rewind-proof"] !== "v0.7") {
+  if (req.headers["x-rewind-proof"] !== "v0.8") {
     return send(res, 400, { ok: false, error: { message: "Proof request header is missing." } });
   }
   if (req.body?.intent !== "signed-devnet-proof") {
@@ -175,7 +176,7 @@ export default async function handler(req, res) {
     } catch (error) {
       return send(res, 504, stageError("fund", error, {
         sender: sender.publicKey.toString(),
-        airdropSignature: airdropSignature?.toString?.() || String(airdropSignature || ""),
+        airdropSignature: normalizeRpcSignature(airdropSignature),
         durationMs: Date.now() - started,
       }));
     }
@@ -195,13 +196,13 @@ export default async function handler(req, res) {
       return send(res, 502, stageError("sign", error, {
         sender: sender.publicKey.toString(),
         recipient: recipient.publicKey.toString(),
-        airdropSignature: airdropSignature?.toString?.() || String(airdropSignature || ""),
+        airdropSignature: normalizeRpcSignature(airdropSignature),
         balanceBefore: formatRlo(balanceBefore),
         durationMs: Date.now() - started,
       }));
     }
 
-    const signatureText = transferSignature.toString();
+    const signatureText = normalizeRpcSignature(transferSignature);
     try {
       await waitForTransaction(client, transferSignature, FINALITY_TIMEOUT_MS);
     } catch (error) {
@@ -216,7 +217,7 @@ export default async function handler(req, res) {
         sender: sender.publicKey.toString(),
         recipient: recipient.publicKey.toString(),
         signature: signatureText,
-        airdropSignature: airdropSignature?.toString?.() || String(airdropSignature || ""),
+        airdropSignature: normalizeRpcSignature(airdropSignature),
         balanceBefore: formatRlo(balanceBefore),
         balanceAfter: formatRlo(balanceAfter),
         transfer: formatRlo(TRANSFER_KELVIN),
@@ -238,7 +239,7 @@ export default async function handler(req, res) {
       sender: sender.publicKey.toString(),
       recipient: recipient.publicKey.toString(),
       signature: signatureText,
-      airdropSignature: airdropSignature?.toString?.() || String(airdropSignature || ""),
+      airdropSignature: normalizeRpcSignature(airdropSignature),
       balanceBefore: formatRlo(balanceBefore),
       balanceAfter: formatRlo(balanceAfter),
       transfer: formatRlo(TRANSFER_KELVIN),
