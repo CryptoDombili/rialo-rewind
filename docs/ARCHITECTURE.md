@@ -15,3 +15,8 @@
 ## Next onchain layer
 
 The dedicated recovery registry program will persist receipt hashes and compensation results. The local state machine will remain deterministic and will submit only the final proof envelope onchain.
+
+
+## R1.1 receipt commitment
+
+`/api/anchor` accepts a validated SHA-256 workflow receipt hash. It domain-separates the hash, derives a deterministic Rialo commitment address, and submits a small devnet system transfer to that address. The returned anchor record includes the transaction signature, commitment address, block height, and account-state evidence. Given the same receipt hash, the verifier derives the same commitment address and checks the transaction or balance delta.

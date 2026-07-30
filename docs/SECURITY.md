@@ -8,3 +8,8 @@
 - The proof endpoint accepts one fixed intent and no transaction parameters from the user.
 - Amounts are hard-coded to 0.05 RLO faucet funding and a 0.001 RLO transfer.
 - The existing RPC proxy uses an allowlist of read-only methods.
+
+
+## Receipt anchor limitations
+
+The R1.1 commitment address is deterministically derived from public receipt data. It is not a custody address and must never hold valuable funds. The demo transfers only a small devnet amount. The value of the mechanism is the permanent transaction reference and deterministic hash-to-address binding, not control of the recipient key.

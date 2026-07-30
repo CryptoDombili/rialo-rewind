@@ -1,8 +1,8 @@
-# Rialo Rewind R1.0
+# Rialo Rewind R1.1
 
 Native compensation and recovery engine for real-world workflows on Rialo.
 
-R1.0 connects the interface to a real server-side state machine. The clean and controlled-failure flows are executed inside `/api/workflow`; the browser only replays the events returned by that execution.
+R1.1 connects the interface to a real server-side state machine. The clean and controlled-failure flows are executed inside `/api/workflow`; the browser only replays the events returned by that execution.
 
 ## What is real
 
@@ -25,3 +25,8 @@ The workflow adapters are server-side sandbox business systems, not third-party 
 npm test
 npm run check
 ```
+
+
+## R1.1 receipt anchoring
+
+After a server workflow issues a SHA-256 receipt hash, the operator can anchor that hash to Rialo devnet. The anchor endpoint domain-separates the receipt hash, derives a deterministic commitment address, and submits a small devnet transfer to that address. Verification recomputes the address from the receipt hash and checks transaction-index or account-state evidence. This is a hash commitment, not a general-purpose memo program.

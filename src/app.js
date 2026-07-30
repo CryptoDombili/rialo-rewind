@@ -2,6 +2,8 @@ import { initDevnetPanel } from "./rialo/devnet-panel.js";
 import { initSignedProof } from "./rialo/signed-proof.js";
 import { serializeReceipt } from "./core/receipt.js";
 import { executeServerWorkflow } from "./core/workflow-client.js";
+import { createReceiptAnchor, verifyReceiptAnchor } from "./rialo/receipt-anchor.js";
+import { shortAnchorValue } from "./core/anchor-model.js";
 
 (() => {
       "use strict";
@@ -24,6 +26,7 @@ import { executeServerWorkflow } from "./core/workflow-client.js";
       const proofLabModal = $("#proofLabModal");
       const toast = $("#toast");
       const receiptButton = $('[data-action="receipt"]');
+      const anchorButton = $('[data-action="anchor"]');
 
       const inspector = {
         code: $("#inspectorCode"), kicker: $("#inspectorKicker"), title: $("#inspectorTitle"),
@@ -32,7 +35,8 @@ import { executeServerWorkflow } from "./core/workflow-client.js";
       };
       const receipt = {
         badge: $("#receiptBadge"), result: $("#receiptResult"), failed: $("#receiptFailed"),
-        retries: $("#receiptRetries"), refund: $("#receiptRefund"), engine: $("#receiptEngine"), hash: $("#receiptHash")
+        retries: $("#receiptRetries"), refund: $("#receiptRefund"), engine: $("#receiptEngine"), hash: $("#receiptHash"),
+        anchorStatus: $("#receiptAnchorStatus"), commitment: $("#receiptCommitment"), anchorSignature: $("#receiptAnchorSignature")
       };
 
       const data = {
@@ -54,6 +58,7 @@ import { executeServerWorkflow } from "./core/workflow-client.js";
       let startedAt = performance.now();
       let selectedNode = "reserve";
       let lastReceipt = null;
+      let lastAnchor = null;
       let toastTimer = null;
 
       const sleep = (ms) => new Promise((resolve) => window.setTimeout(resolve, ms));
@@ -133,6 +138,7 @@ import { executeServerWorkflow } from "./core/workflow-client.js";
 
       function resetReceipt() {
         lastReceipt = null;
+        lastAnchor = null;
         receipt.badge.textContent = "UNISSUED";
         receipt.result.textContent = "NO RESULT";
         receipt.result.style.color = "";
@@ -141,6 +147,13 @@ import { executeServerWorkflow } from "./core/workflow-client.js";
         receipt.refund.textContent = "0.00 RLO";
         receipt.engine.textContent = "—";
         receipt.hash.textContent = "—";
+        receipt.anchorStatus.textContent = "NOT ANCHORED";
+        receipt.anchorStatus.style.color = "";
+        receipt.commitment.textContent = "—";
+        receipt.anchorSignature.textContent = "—";
+        anchorButton.disabled = true;
+        anchorButton.dataset.mode = "anchor";
+        anchorButton.firstChild.textContent = "ANCHOR RECEIPT ";
         receiptButton.disabled = true;
         $("#proofStatus").textContent = "WAITING";
         $("#proofTitle").textContent = "No receipt issued";
@@ -148,6 +161,8 @@ import { executeServerWorkflow } from "./core/workflow-client.js";
         $("#proofManual").textContent = "—";
         $("#proofEngine").textContent = "—";
         $("#proofReceiptHash").textContent = "—";
+        $("#proofAnchorStatus").textContent = "NOT ANCHORED";
+        $("#proofCommitment").textContent = "—";
       }
 
       function issueReceipt(serverReceipt) {
@@ -158,15 +173,16 @@ import { executeServerWorkflow } from "./core/workflow-client.js";
         receipt.failed.textContent = serverReceipt.failedStep;
         receipt.retries.textContent = String(serverReceipt.retries);
         receipt.refund.textContent = serverReceipt.refund;
-        receipt.engine.textContent = "SERVER R1.0";
+        receipt.engine.textContent = "SERVER R1.1";
         receipt.hash.textContent = `${serverReceipt.receiptHash.slice(0, 12)}…`;
         lastReceipt = serverReceipt;
+        anchorButton.disabled = false;
         receiptButton.disabled = false;
         $("#proofStatus").textContent = "ISSUED";
         $("#proofTitle").textContent = result === "COMPENSATED" ? "Recovery receipt ready" : "Settlement receipt ready";
         $("#proofText").textContent = result === "COMPENSATED" ? "The server state machine retried the courier boundary and executed three idempotent compensations." : "The server state machine completed all five forward actions and discarded the compensation stack.";
         $("#proofManual").textContent = serverReceipt.manualIntervention;
-        $("#proofEngine").textContent = "SERVER R1.0";
+        $("#proofEngine").textContent = "SERVER R1.1";
         $("#proofReceiptHash").textContent = `${serverReceipt.receiptHash.slice(0, 12)}…`;
       }
 
@@ -258,7 +274,7 @@ import { executeServerWorkflow } from "./core/workflow-client.js";
 
           const [source, label] = serverEventLabel(event);
           if (event.type === "workflow.started") {
-            log("SERVER", `Execution ${event.executionId.slice(0, 8)} accepted by the R1.0 state machine.`);
+            log("SERVER", `Execution ${event.executionId.slice(0, 8)} accepted by the R1.1 state machine.`);
           } else if (event.type === "action.started") {
             selectNode(event.name);
             setNode(event.name, "is-running", event.attempt ? `TRY ${event.attempt}/3` : (event.compensation ? "REVERSING" : "RUNNING"));
@@ -376,6 +392,45 @@ import { executeServerWorkflow } from "./core/workflow-client.js";
       async function cleanFlow() { return runServerFlow("clean"); }
       async function failureFlow() { return runServerFlow("failure"); }
 
+
+      function updateAnchorUI(anchor) {
+        lastAnchor = anchor;
+        const confirmed = ["confirmed", "state-confirmed"].includes(anchor.status);
+        const label = anchor.status === "confirmed" ? "ANCHORED" : anchor.status === "state-confirmed" ? "STATE VERIFIED" : "SUBMITTED";
+        receipt.anchorStatus.textContent = label;
+        receipt.anchorStatus.style.color = confirmed ? "var(--acid)" : "var(--amber)";
+        receipt.commitment.textContent = shortAnchorValue(anchor.commitmentAddress, 8);
+        receipt.anchorSignature.textContent = shortAnchorValue(anchor.signature, 8);
+        $("#proofAnchorStatus").textContent = label;
+        $("#proofCommitment").textContent = shortAnchorValue(anchor.commitmentAddress, 8);
+        anchorButton.dataset.mode = confirmed ? "verify" : "verify";
+        anchorButton.firstChild.textContent = confirmed ? "VERIFY ANCHOR " : "VERIFY ANCHOR ";
+        anchorButton.disabled = false;
+        lastReceipt = { ...lastReceipt, onchainAnchor: anchor };
+      }
+
+      async function anchorReceipt() {
+        if (!lastReceipt) { showToast("NO RECEIPT", "Run a workflow before anchoring."); return; }
+        anchorButton.disabled = true;
+        receipt.anchorStatus.textContent = lastAnchor ? "VERIFYING" : "ANCHORING";
+        receipt.anchorStatus.style.color = "var(--amber)";
+        log("RIALO", lastAnchor ? "Verifying receipt commitment on Rialo devnet." : "Creating receipt-hash commitment on Rialo devnet.");
+        try {
+          const anchor = lastAnchor ? await verifyReceiptAnchor(lastAnchor) : await createReceiptAnchor(lastReceipt.receiptHash);
+          updateAnchorUI(anchor);
+          const label = anchor.status === "confirmed" ? "RIALO ANCHOR CONFIRMED" : anchor.status === "state-confirmed" ? "RIALO ANCHOR STATE VERIFIED" : "RIALO ANCHOR SUBMITTED";
+          log("RIALO", `${label}. Commitment ${shortAnchorValue(anchor.commitmentAddress, 8)}.`, anchor.status === "submitted" ? "" : "success");
+          showToast(label, `${shortAnchorValue(anchor.signature, 8)} binds the receipt hash to Rialo devnet.`);
+        } catch (error) {
+          console.error(error);
+          receipt.anchorStatus.textContent = "ANCHOR ERROR";
+          receipt.anchorStatus.style.color = "var(--red-2)";
+          log("RIALO", error.message, "error");
+          showToast("ANCHOR ERROR", error.message);
+          anchorButton.disabled = false;
+        }
+      }
+
       function exportReceipt() {
         if (!lastReceipt) { showToast("NO RECEIPT", "Run a workflow before exporting."); return; }
         const blob = new Blob([serializeReceipt(lastReceipt)], { type: "application/json" });
@@ -415,6 +470,7 @@ import { executeServerWorkflow } from "./core/workflow-client.js";
         else if (action === "failure") failureFlow();
         else if (action === "reset") resetUI({ notify: true });
         else if (action === "receipt") exportReceipt();
+        else if (action === "anchor") anchorReceipt();
         else if (action === "proof-lab") openProofLab();
         else if (action === "close-modal") closeProofLab();
         else if (action === "home") { resetUI({ notify: true }); }

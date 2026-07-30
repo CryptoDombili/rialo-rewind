@@ -648,3 +648,14 @@ body { font-size: 16px; }
   white-space: nowrap;
 }
 .app[data-flow="running"] .control-button:disabled { opacity: .72; }
+
+
+/* R1.1 onchain receipt anchor */
+.receipt-actions { display: grid; grid-template-columns: 1fr 1fr; }
+.receipt-actions button + button { border-left: 1px solid var(--line); }
+.anchor-button { width: 100%; min-height: 50px; border: 0; background: #131916; color: var(--acid); display: flex; align-items: center; justify-content: space-between; padding: 0 13px; cursor: pointer; font: 800 10px/1 var(--mono); letter-spacing: .08em; }
+.anchor-button:hover:not(:disabled) { background: var(--acid); color: var(--black); }
+.anchor-button:disabled { color: #59615d; background: #171b19; cursor: wait; }
+#receiptCommitment, #receiptAnchorSignature, #proofCommitment { max-width: 154px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+#receiptAnchorStatus, #proofAnchorStatus { color: var(--muted); }
+@media (max-width: 1450px) { .receipt-actions { grid-template-columns: 1fr; } .receipt-actions button + button { border-left: 0; border-top: 1px solid var(--line); } }

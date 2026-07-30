@@ -35,7 +35,7 @@
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 4 7v5c0 5 3.4 8.3 8 9 4.6-.7 8-4 8-9V7l-8-4Z"/><path d="m9 12 2 2 4-5"/></svg><span>RULES</span>
         </button>
       </div>
-      <div class="rail-version"><span>BUILD</span><strong>R1.0</strong></div>
+      <div class="rail-version"><span>BUILD</span><strong>R1.1</strong></div>
     </aside>
 
     <main class="workspace">
@@ -136,8 +136,8 @@
         <div class="receipt-block">
           <div class="receipt-head"><span>WORKFLOW RECEIPT</span><strong id="receiptBadge">UNISSUED</strong></div>
           <div class="receipt-result" id="receiptResult">NO RESULT</div>
-          <div class="receipt-grid"><span>FAILED STEP</span><strong id="receiptFailed">—</strong><span>RETRIES</span><strong id="receiptRetries">0</strong><span>REFUND</span><strong id="receiptRefund">0.00 RLO</strong><span>ENGINE</span><strong id="receiptEngine">—</strong><span>RECEIPT HASH</span><strong id="receiptHash">—</strong></div>
-          <button class="export-button" type="button" data-action="receipt" disabled>EXPORT RECEIPT <span>↗</span></button>
+          <div class="receipt-grid"><span>FAILED STEP</span><strong id="receiptFailed">—</strong><span>RETRIES</span><strong id="receiptRetries">0</strong><span>REFUND</span><strong id="receiptRefund">0.00 RLO</strong><span>ENGINE</span><strong id="receiptEngine">—</strong><span>RECEIPT HASH</span><strong id="receiptHash">—</strong><span>RIALO ANCHOR</span><strong id="receiptAnchorStatus">NOT ANCHORED</strong><span>COMMITMENT</span><strong id="receiptCommitment">—</strong><span>ANCHOR TX</span><strong id="receiptAnchorSignature">—</strong></div>
+          <div class="receipt-actions"><button class="anchor-button" type="button" data-action="anchor" disabled>ANCHOR RECEIPT <span>⛓</span></button><button class="export-button" type="button" data-action="receipt" disabled>EXPORT RECEIPT <span>↗</span></button></div>
         </div>
       </section>
 
@@ -145,7 +145,7 @@
         <div class="inspector-head"><span>PROOF LAYER</span><span>RW–0247</span></div>
         <div class="summary-card live-proof-card"><div class="summary-head"><span>RIALO DEVNET</span><span id="proofNetworkStatus">CHECKING</span></div><h3>Live chain telemetry</h3><ul class="summary-list"><li><span>Finalized block</span><strong id="proofBlockHeight">—</strong></li><li><span>Signed proof</span><strong id="proofSignedStatus">NOT RUN</strong></li><li><span>Signature</span><strong id="proofSignatureShort">—</strong></li></ul><button class="proof-launch" type="button" data-action="proof-lab">OPEN DEVNET PROOF <span>↗</span></button></div>
         <div class="summary-card"><div class="summary-head"><span>WORKFLOW RECEIPT</span><span id="proofStatus">WAITING</span></div><h3 id="proofTitle">No receipt issued</h3><p id="proofText">Run a clean flow or inject a failure. The console will produce a portable execution receipt.</p></div>
-        <div class="summary-card"><div class="summary-head"><span>TRACE SUMMARY</span><span>DETERMINISTIC ENGINE</span></div><ul class="summary-list"><li><span>Workflow ID</span><strong>RW–0247</strong></li><li><span>Protected escrow</span><strong>50.00 RLO</strong></li><li><span>Forward steps</span><strong>5</strong></li><li><span>Compensation steps</span><strong>3</strong></li><li><span>Manual intervention</span><strong id="proofManual">—</strong></li><li><span>Execution engine</span><strong id="proofEngine">—</strong></li><li><span>Receipt hash</span><strong id="proofReceiptHash">—</strong></li></ul></div>
+        <div class="summary-card"><div class="summary-head"><span>TRACE SUMMARY</span><span>DETERMINISTIC ENGINE</span></div><ul class="summary-list"><li><span>Workflow ID</span><strong>RW–0247</strong></li><li><span>Protected escrow</span><strong>50.00 RLO</strong></li><li><span>Forward steps</span><strong>5</strong></li><li><span>Compensation steps</span><strong>3</strong></li><li><span>Manual intervention</span><strong id="proofManual">—</strong></li><li><span>Execution engine</span><strong id="proofEngine">—</strong></li><li><span>Receipt hash</span><strong id="proofReceiptHash">—</strong></li><li><span>Rialo anchor</span><strong id="proofAnchorStatus">NOT ANCHORED</strong></li><li><span>Commitment</span><strong id="proofCommitment">—</strong></li></ul></div>
       </section>
 
       <section class="rail-view rules-summary" data-panel="rules">
@@ -158,7 +158,7 @@
 
     <div class="modal-backdrop" id="proofLabModal" aria-hidden="true">
       <div class="modal modal-wide proof-lab" role="dialog" aria-modal="true" aria-labelledby="proofLabTitle">
-        <div class="modal-head"><span>RIALO DEVNET PROOF / R1.0</span><button class="modal-close" type="button" data-action="close-modal" aria-label="Close">×</button></div>
+        <div class="modal-head"><span>RIALO DEVNET PROOF / R1.1</span><button class="modal-close" type="button" data-action="close-modal" aria-label="Close">×</button></div>
         <div class="proof-lab-body">
           <section class="proof-lab-intro">
             <div><span class="status-pill"><i></i> REAL DEVNET TRANSACTION</span><h3 id="proofLabTitle">Verify the network, then create one proof.</h3><p>First, the official Rialo CDK verifies devnet. Then a disposable server-side keypair is funded and signs a test transfer. Finality is proven by the transaction index or by sender-debit and recipient-credit account state. No seed phrase or private key reaches the browser.</p></div>
